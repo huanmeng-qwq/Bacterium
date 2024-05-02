@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "grown=0": { "model": "bacterium:block/must" },
+        "grown=1": { "model": "bacterium:block/must" },
+        "grown=2": { "model": "bacterium:block/must" },
+        "grown=3": { "model": "bacterium:block/must" },
+        "grown=4": { "model": "bacterium:block/must" },
+        "grown=5": { "model": "bacterium:block/must" },
+        "grown=6": { "model": "bacterium:block/must" },
+        "grown=7": { "model": "bacterium:block/must_grown" }
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "bacterium",
+  "version": "${version}",
+  "name": "Bacterium",
+  "description": "Bacterium for fabric",
+  "authors": [
+    "huanmeng_qwq"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/bacterium/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.huanmeng.bacterium.Bacterium"
+    ]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": ">=1.20.6"
+  }
+}
