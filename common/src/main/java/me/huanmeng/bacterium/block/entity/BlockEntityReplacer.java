@@ -9,6 +9,8 @@ import me.huanmeng.bacterium.util.Entry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,28 +32,32 @@ public class BlockEntityReplacer extends BlockEntity {
     }
 
     public void findInfectBlcoks() {
-        final BlockState bacteriaState = level.getBlockState(worldPosition.above());
-        final BlockState sampleState = level.getBlockState(worldPosition.below());
+        final BlockPos above = worldPosition.above();
+        final BlockPos below = worldPosition.below();
+
+        final BlockState bacteriaState = level.getBlockState(above);
+        final BlockState sampleState = level.getBlockState(below);
         if (!isInvalidBacteria(bacteriaState) && !BlockEntityBacteria.isInvalidBlock(sampleState) && bacteriaState != sampleState) {
-            bacteria = new Entry(bacteriaState);
-            sample = new Entry(sampleState);
-            level.setBlockAndUpdate(worldPosition.above(), Blocks.AIR.defaultBlockState());
+            bacteria = new Entry(bacteriaState, level, level.getBlockEntity(above));
+            sample = new Entry(sampleState, level, level.getBlockEntity(below));
+            level.setBlockAndUpdate(above, Blocks.AIR.defaultBlockState());
         }
     }
 
     public static boolean isInvalidBacteria(BlockState state) {
         Block block = state.getBlock();
-        return block == Blocks.BEDROCK ||
+        return state.isAir() ||
+                block == Blocks.BEDROCK ||
                 block == ModBlocks.JAMMER.get() ||
                 block == Blocks.BRICKS
                 ;
     }
 
-    public void addInfectBlock(BlockState state) {
+    public void addInfectBlock(BlockState state, BlockPos pos) {
         if (BlockEntityBacteria.isInvalidBlock(state)) {
             return;
         }
-        bacteria = new Entry(state);
+        bacteria = new Entry(state, level, level.getBlockEntity(pos));
     }
 
     public boolean isInfectBlock(BlockState state) {
@@ -78,10 +84,11 @@ public class BlockEntityReplacer extends BlockEntity {
         }
         level.setBlockAndUpdate(pos, getBlockState());
         BlockEntityReplacer blockEntity = (BlockEntityReplacer) level.getBlockEntity(pos);
-        assert blockEntity != null;
-        blockEntity.id = id;
-        blockEntity.sample = sample;
-        blockEntity.bacteria = bacteria;
+        if (blockEntity != null) {
+            blockEntity.id = id;
+            blockEntity.sample = sample;
+            blockEntity.bacteria = bacteria;
+        }
     }
 
 
@@ -97,20 +104,7 @@ public class BlockEntityReplacer extends BlockEntity {
 
     public void remove() {
         if (bacteria != null) {
-            final BlockState state = bacteria.state();
-            level.setBlockAndUpdate(worldPosition, state);
-            if (bacteria.nbt != null) {
-                if (level.getBlockEntity(worldPosition) != null) {
-                    final BlockEntity blockEntity = BlockEntity.loadStatic(
-                            worldPosition, state,
-                            bacteria.nbt,
-                            level.registryAccess()
-                    );
-                    if (blockEntity != null) {
-                        level.setBlockEntity(blockEntity);
-                    }
-                }
-            }
+            bacteria.place(level, worldPosition);
         } else {
             level.setBlockAndUpdate(worldPosition, Blocks.AIR.defaultBlockState());
         }
@@ -123,23 +117,35 @@ public class BlockEntityReplacer extends BlockEntity {
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-
+        if (!tag.contains(Constants.MOD_ID, Tag.TAG_COMPOUND)) {
+            return;
+        }
+        final CompoundTag main = tag.getCompound(Constants.MOD_ID);
+        if (main.contains("id", Tag.TAG_INT)) {
+            this.id = main.getInt("id");
+        }
+        if (main.contains("bacteria")) {
+            Entry.CODEC.decode(NbtOps.INSTANCE, main.get("bacteria")).result().ifPresent(e -> {
+                this.bacteria = e.getFirst();
+            });
+        }
+        if (main.contains("sample")) {
+            Entry.CODEC.decode(NbtOps.INSTANCE, main.get("sample")).result().ifPresent(e -> {
+                this.sample = e.getFirst();
+            });
+        }
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        writeLegacy(tag);
+        final CompoundTag main = new CompoundTag();
+        main.putInt("id", id);
+        if (bacteria != null)
+            main.put("bacteria", bacteria.toNbt());
+        if (sample != null)
+            main.put("sample", sample.toNbt());
+        tag.put(Constants.MOD_ID, main);
     }
 
-    public void writeLegacy(CompoundTag compound) {
-        final CompoundTag main = new CompoundTag();
-        main.putInt("identifier", id);
-        final CompoundTag entries = new CompoundTag();
-//todo        for (Entry e : mbs) {
-//            entries.put(RandomStringUtils.random(8), e.toNbt());
-//        }
-        main.put("entries", entries);
-        compound.put(Constants.MOD_ID, main);
-    }
 }

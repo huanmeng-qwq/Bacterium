@@ -1,180 +1,127 @@
 package me.huanmeng.bacterium.util;
 
-import net.minecraft.core.Direction;
+import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.RecordBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.*;
-
-import java.lang.reflect.Field;
+import net.minecraft.world.level.block.state.properties.Property;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import javax.annotation.Nullable;
 
 public class Entry {
+    private static final JsonOps JSONOPS = JsonOps.COMPRESSED;
+    public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("block").forGetter(e -> e.state.getBlockHolder().getRegisteredName()),
+            CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(e -> Optional.ofNullable(e.nbt)),
+            //
+            new Codec<Map<String, JsonElement>>() {
+
+                @Override
+                public <T> DataResult<T> encode(final Map<String, JsonElement> input, final DynamicOps<T> ops, final T prefix) {
+                    final RecordBuilder<T> mappedBuilder = ops.mapBuilder();
+                    input.forEach((k, v) -> mappedBuilder.add(k, JSONOPS.convertTo(ops, v)));
+                    return mappedBuilder.build(prefix);
+                }
+
+                @Override
+                public <T> DataResult<Pair<Map<String, JsonElement>, T>> decode(final DynamicOps<T> ops, final T input) {
+                    Map<String, JsonElement> result = new HashMap<>();
+                    return ops.getMap(input).flatMap(map -> {
+                        map.entries().forEach(entry -> {
+                            String key = ops.getStringValue(entry.getFirst()).getOrThrow();
+                            final T second = entry.getSecond();
+                            result.put(key, ops.convertTo(JSONOPS, second));
+                        });
+                        return DataResult.success(Pair.of(result, input));
+                    });
+                }
+            }.fieldOf("props").forGetter(e -> e.props)
+    ).apply(instance, Entry::load));
 
     public BlockState state;
-    public CompoundTag nbt;
-    public Map<Property<? extends Comparable<?>>, Comparable<?>> props;
+    private CompoundTag nbt;
+    private Map<String, JsonElement> props;
 
-    public Entry(BlockState state) {
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Entry(BlockState state, @Nullable Level level, @Nullable BlockEntity blockEntity) {
         this.state = state;
         this.props = new HashMap<>();
+        for (final Property<?> property : state.getProperties()) {
+            final Object value = state.getValue(property);
+            final DataResult<JsonElement> object = property.valueCodec().encodeStart(JSONOPS, new Property.Value(property, (Comparable) value));
+            this.props.put(property.getName(), object.getOrThrow());
+        }
+        if (level != null && blockEntity != null) {
+            this.nbt = blockEntity.saveWithFullMetadata(level.registryAccess());
+        }
     }
 
-    public <E extends Enum<E> & StringRepresentable> Entry enums(E e, EnumProperty<E> property) {
-        props.put(property, e);
-        return this;
+    public void place(Level level, BlockPos pos) {
+        if (level == null) return;
+        final BlockState blockState = createState();
+        level.setBlockAndUpdate(pos, blockState);
+        if (this.nbt != null && level.getBlockEntity(pos) != null) {
+            final BlockEntity blockEntity = BlockEntity.loadStatic(pos, blockState, this.nbt, level.registryAccess());
+            if (blockEntity != null) level.setBlockEntity(blockEntity);
+        }
     }
 
-    public BlockState state() {
+    public BlockState createState() {
         BlockState state = this.state;
-        for (Map.Entry<Property<? extends Comparable<?>>, Comparable<?>> entry : props.entrySet()) {
-            state = state.setValue(((Property) entry.getKey()), ((Comparable) entry.getValue()));
+        for (final Property<?> property : state.getProperties()) {
+            if (this.props.containsKey(property.getName())) {
+                state = setPropertyValue(state, property);
+            }
         }
         return state;
     }
 
-    public Entry enums(String enumName, String enumClass, Object instance) {
-        try {
-            final Class<?> enumClazz = Class.forName(enumClass);
-            if (!enumClazz.isEnum()) {
-                return this;
+    @SuppressWarnings("unchecked")
+    private <T extends Comparable<T>> BlockState setPropertyValue(BlockState state, Property<T> property) {
+        JsonElement value = this.props.get(property.getName());
+        if (property.getValueClass().isInstance(value)) {
+            try {
+                return state.setValue(property, property.valueCodec().decode(JSONOPS, value).getOrThrow().getFirst().value());
+            } catch (Throwable e) {
+                return state;
             }
-            props.put(((Property<?>) instance), ((Comparable<?>) enumClazz.getDeclaredMethod("valueOf", String.class).invoke(null, enumName)));
-        } catch (Exception ignored) {
         }
-        return this;
+        return state;
     }
 
-    public Entry bool(boolean b, BooleanProperty property) {
-        props.put(property, b);
-        return this;
+    @SuppressWarnings("unchecked")
+    private static Entry load(String blockId, Optional<CompoundTag> nbt, Map<String, JsonElement> props) {
+        final Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(blockId));
+        if (block.isEmpty()) return null;
+        final Entry entry = new Entry(block.get().defaultBlockState(), null, null);
+        entry.nbt = nbt.orElse(null);
+        entry.props = props;
+        return entry;
     }
 
-    public Entry bool(boolean b, Object instance) {
-        props.put(((Property<?>) instance), b);
-        return this;
-    }
-
-    public Entry ints(int i, IntegerProperty property) {
-        props.put(property, i);
-        return this;
-    }
-
-    public Entry ints(int i, Object instance) {
-        props.put(((Property<?>) instance), i);
-        return this;
-    }
-
-    public Entry dir(Direction dir, DirectionProperty property) {
-        props.put(property, dir);
-        return this;
-    }
-
-    public Entry dir(Direction dir, Object instance) {
-        props.put(((Property<?>) instance), dir);
-        return this;
+    public Tag toNbt() {
+        return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
     }
 
     @Override
     public String toString() {
-        return "Entry{" +
-                "state=" + state +
-                ", nbt=" + nbt +
-                ", props=" + props +
-                '}';
-    }
-
-    public static Entry readFromNbt(CompoundTag entry) {
-        final Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(entry.getString("id")));
-        final Entry e = new Entry(block.defaultBlockState());
-        if (entry.contains("nbt")) {
-            e.nbt = entry.getCompound("nbt");
-        }
-        if (entry.contains("properties")) {
-            final CompoundTag properties = entry.getCompound("properties");
-            for (String name : properties.getAllKeys()) {
-                final CompoundTag a = properties.getCompound(name);
-                final int index = a.getInt("index");
-                final Object propertyInstance = PropertyType.findProperty(block.getClass(), index, block);
-                if (propertyInstance != null) {
-                    final PropertyType type = PropertyType.type(properties);
-                    if (type != null)
-                        switch (type) {
-                            case BOOL -> {
-                                e.bool(a.getBoolean("value"), propertyInstance);
-                            }
-                            case DIR -> {
-                                e.dir(Direction.BY_ID.apply(a.getInt("value")), propertyInstance);
-                            }
-                            case INT -> {
-                                e.ints(a.getInt("value"), propertyInstance);
-                            }
-                            case ENUM -> {
-                                e.enums(a.getString("value"), a.getString("class"), properties);
-                            }
-                        }
-                }
-            }
-        }
-        return e;
-    }
-
-    public CompoundTag toNbt() {
-        final CompoundTag entry = new CompoundTag();
-        final Block block = state.getBlock();
-        entry.putString("id", BuiltInRegistries.BLOCK.getKey(block).toString());
-        if (nbt != null) {
-            entry.put("nbt", nbt);
-        }
-        if (!props.isEmpty()) {
-            final CompoundTag properties = new CompoundTag();
-            for (Map.Entry<Property<? extends Comparable<?>>, Comparable<?>> comparableEntry : props.entrySet()) {
-                final CompoundTag pro = new CompoundTag();
-                final PropertyType type = PropertyType.type(comparableEntry.getKey());
-                if (type != null)
-                    switch (type) {
-                        case DIR -> {
-                            pro.putInt("value", ((Direction) comparableEntry.getValue()).get3DDataValue());
-                        }
-                        case ENUM -> {
-                            pro.putString("value", ((Enum<?>) comparableEntry.getValue()).name());
-                            pro.putString("class", comparableEntry.getValue().getClass().getName());
-                        }
-                        case INT -> {
-                            pro.putInt("value", ((Integer) comparableEntry.getValue()));
-                        }
-                        case BOOL -> {
-                            pro.putBoolean("value", ((Boolean) comparableEntry.getValue()));
-                        }
-                    }
-
-                int index = -1;
-                try {
-                    final Class<? extends Block> clazz = block.getClass();
-                    final Field[] declaredFields = clazz.getDeclaredFields();
-                    for (int i = 0; i < declaredFields.length; i++) {
-                        final Field field = declaredFields[i];
-                        field.setAccessible(true);
-                        if (field.get(block) == comparableEntry.getKey()) {
-                            index = i;
-                            break;
-                        }
-                    }
-                    pro.putInt("index", index);
-                } catch (Exception ignored) {
-                }
-                if (index == -1) {
-                    continue;
-                }
-                properties.put(comparableEntry.getKey().getName(), pro);
-            }
-            entry.put("properties", properties);
-        }
-        return entry;
+        return "Entry{" + "state=" + state + ", nbt=" + nbt + ", props=" + props + '}';
     }
 }

@@ -1,5 +1,6 @@
 package me.huanmeng.bacterium.block.entity;
 
+import com.mojang.datafixers.util.Pair;
 import me.huanmeng.bacterium.BacteriumCache;
 import me.huanmeng.bacterium.Constants;
 import me.huanmeng.bacterium.block.ModBlock;
@@ -9,6 +10,10 @@ import me.huanmeng.bacterium.util.Entry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,21 +40,22 @@ public class BlockEntityBacteria extends BlockEntity {
         BlockState state;
         BlockPos pos = worldPosition.above();
         while (!(state = level.getBlockState(pos)).isAir()) {
-            addInfectBlock(state);
+            addInfectBlock(state, pos);
             pos = pos.above();
         }
     }
 
-    public void addInfectBlock(BlockState state) {
+    public void addInfectBlock(BlockState state, BlockPos pos) {
         if (isInvalidBlock(state)) {
             return;
         }
-        infected.add(new Entry(state));
+        infected.add(new Entry(state, level, level.getBlockEntity(pos)));
     }
 
     public static boolean isInvalidBlock(BlockState state) {
         Block block = state.getBlock();
-        return block == Blocks.BEDROCK ||
+        return state.isAir() ||
+                block == Blocks.BEDROCK ||
                 block == ModBlocks.BACTERIA.get() ||
                 block == ModBlocks.REPLACER.get() ||
                 block == ModBlocks.JAMMER.get() ||
@@ -69,20 +75,23 @@ public class BlockEntityBacteria extends BlockEntity {
     }
 
     protected static boolean matchState(Entry a, BlockState state) {
-        if (a.state == state) {
+        BlockState excepted = a.state;
+        if (excepted == state) {
             return true;
         } else if (state == Blocks.DIRT.defaultBlockState()) {
-            return a.state == Blocks.GRASS_BLOCK.defaultBlockState();
+            return excepted == Blocks.GRASS_BLOCK.defaultBlockState();
         } else if (state == Blocks.GRASS_BLOCK.defaultBlockState()) {
-            return a.state == Blocks.DIRT.defaultBlockState();
+            return excepted == Blocks.DIRT.defaultBlockState();
         } else if (state == Blocks.WATER.defaultBlockState()) {
-            return a.state.getFluidState().getType() == Fluids.FLOWING_WATER;
+            return excepted.getFluidState().getType() == Fluids.FLOWING_WATER;
         } else if (state.getFluidState().getType() == Fluids.FLOWING_WATER) {
-            return a.state == Blocks.WATER.defaultBlockState();
+            return excepted == Blocks.WATER.defaultBlockState();
         } else if (state == Blocks.LAVA.defaultBlockState()) {
-            return a.state.getFluidState().getType() == Fluids.FLOWING_LAVA;
+            return excepted.getFluidState().getType() == Fluids.FLOWING_LAVA;
         } else if (state.getFluidState().getType() == Fluids.FLOWING_LAVA) {
-            return a.state == Blocks.LAVA.defaultBlockState();
+            return excepted == Blocks.LAVA.defaultBlockState();
+        } else if (state.is(BlockTags.LEAVES)) {
+            return excepted.getBlock() == state.getBlock();
         }
 
         return false;
@@ -125,26 +134,38 @@ public class BlockEntityBacteria extends BlockEntity {
         return pos.getY() > level.getMaxBuildHeight() || pos.getY() < level.getMinBuildHeight();
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-
+        if (!tag.contains(Constants.MOD_ID, Tag.TAG_COMPOUND)) {
+            return;
+        }
+        final CompoundTag main = tag.getCompound(Constants.MOD_ID);
+        if (main.contains("id", Tag.TAG_INT)) {
+            this.id = main.getInt("id");
+        }
+        if (main.contains("entries")) {
+            final ListTag entries = main.getList("entries", Tag.TAG_COMPOUND);
+            for (final Tag entry : entries) {
+                final Pair<Entry, Tag> e = Entry.CODEC.decode(NbtOps.INSTANCE, entry).result().orElse(null);
+                if (e != null) {
+                    this.infected.add(e.getFirst());
+                }
+            }
+        }
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        writeLegacy(tag);
-    }
-
-    public void writeLegacy(CompoundTag compound) {
         final CompoundTag main = new CompoundTag();
-        main.putInt("identifier", id);
-        final CompoundTag entries = new CompoundTag();
-//todo        for (Entry e : mbs) {
-//            entries.put(RandomStringUtils.random(8), e.toNbt());
-//        }
+        main.putInt("id", id);
+        final ListTag entries = new ListTag();
+        for (final Entry entry : infected) {
+            entries.add(entry.toNbt());
+        }
         main.put("entries", entries);
-        compound.put(Constants.MOD_ID, main);
+        tag.put(Constants.MOD_ID, main);
     }
 }

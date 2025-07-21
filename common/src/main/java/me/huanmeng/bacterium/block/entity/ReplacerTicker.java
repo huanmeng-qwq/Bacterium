@@ -28,7 +28,6 @@ public class ReplacerTicker implements BlockEntityTicker<BlockEntityReplacer> {
                 return;
             }
             blockEntity.findInfectBlcoks();
-            blockEntity.expandAndRemove();
             return;
         }
         if (ThreadLocalRandom.current().nextInt(50) + 1 < 50) {
