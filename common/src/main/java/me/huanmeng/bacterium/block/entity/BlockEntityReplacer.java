@@ -19,7 +19,6 @@ public class BlockEntityReplacer extends BlockEntity {
     protected int id;
     protected Entry bacteria;// up
     protected Entry sample;// down
-    private boolean jammed;
 
     public BlockEntityReplacer(BlockPos pos, BlockState blockState) {
         this(ModBlocks.BLOCK_ENTITY_REPLACER.get(), pos, blockState);

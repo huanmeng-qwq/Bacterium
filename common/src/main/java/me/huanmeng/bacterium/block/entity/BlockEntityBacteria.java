@@ -21,7 +21,6 @@ import java.util.List;
 public class BlockEntityBacteria extends BlockEntity {
     protected int id;
     protected final List<Entry> infected = new ArrayList<>();
-    private boolean jammed;
 
     public BlockEntityBacteria(BlockPos pos, BlockState blockState) {
         this(ModBlocks.BLOCK_ENTITY_BACTERIA.get(), pos, blockState);
