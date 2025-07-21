@@ -9,8 +9,7 @@ import net.neoforged.fml.common.Mod;
 public class Bacterium {
 
     public Bacterium(IEventBus eventBus) {
-        NeoForgeRegister.BLOCKS.register(eventBus);
-        NeoForgeRegister.BLOCK_TYPES.register(eventBus);
+        NeoForgeRegister.register(eventBus);
         CommonClass.init();
     }
 }
