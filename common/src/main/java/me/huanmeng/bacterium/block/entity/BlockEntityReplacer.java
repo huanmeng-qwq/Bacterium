@@ -14,79 +14,55 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
-import java.util.ArrayList;
-import java.util.List;
 
-public class BlockEntityBacteria extends BlockEntity {
+public class BlockEntityReplacer extends BlockEntity {
     protected int id;
-    protected final List<Entry> infected = new ArrayList<>();
+    protected Entry bacteria;// up
+    protected Entry sample;// down
     private boolean jammed;
 
-    public BlockEntityBacteria(BlockPos pos, BlockState blockState) {
-        this(ModBlocks.BLOCK_ENTITY_BACTERIA.get(), pos, blockState);
+    public BlockEntityReplacer(BlockPos pos, BlockState blockState) {
+        this(ModBlocks.BLOCK_ENTITY_REPLACER.get(), pos, blockState);
     }
 
-    public BlockEntityBacteria(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
+    public BlockEntityReplacer(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.id = BacteriumCache.freeId();
     }
 
     public void findInfectBlcoks() {
-        BlockState state;
-        BlockPos pos = worldPosition.above();
-        while (!(state = level.getBlockState(pos)).isAir()) {
-            addInfectBlock(state);
-            pos = pos.above();
+        final BlockState bacteriaState = level.getBlockState(worldPosition.above());
+        final BlockState sampleState = level.getBlockState(worldPosition.below());
+        if (!isInvalidBacteria(bacteriaState) && !BlockEntityBacteria.isInvalidBlock(sampleState) && bacteriaState != sampleState) {
+            bacteria = new Entry(bacteriaState);
+            sample = new Entry(sampleState);
         }
     }
 
-    public void addInfectBlock(BlockState state) {
-        if (isInvalidBlock(state)) {
-            return;
-        }
-        infected.add(new Entry(state));
-    }
-
-    public static boolean isInvalidBlock(BlockState state) {
+    public static boolean isInvalidBacteria(BlockState state) {
         Block block = state.getBlock();
         return block == Blocks.BEDROCK ||
-                block == ModBlocks.BACTERIA.get() ||
-                block == ModBlocks.REPLACER.get() ||
                 block == ModBlocks.JAMMER.get() ||
                 block == Blocks.BRICKS
                 ;
     }
 
+    public void addInfectBlock(BlockState state) {
+        if (BlockEntityBacteria.isInvalidBlock(state)) {
+            return;
+        }
+        bacteria = new Entry(state);
+    }
+
     public boolean isInfectBlock(BlockState state) {
         if (BacteriumCache.isUsed(id)) return false;
-        if (infected.isEmpty()) return false;
+        if (sample == null) return false;
         if (state.getBlock() instanceof ModBlock block && block.getModBlockType() == ModBlockType.JAMMER) {
             // remove all of this id
             BacteriumCache.markUsed(id);
             return false;
         }
-        return infected.stream().anyMatch(entry -> matchState(entry, state));
-    }
-
-    protected static boolean matchState(Entry a, BlockState state) {
-        if (a.state == state) {
-            return true;
-        } else if (state == Blocks.DIRT.defaultBlockState()) {
-            return a.state == Blocks.GRASS_BLOCK.defaultBlockState();
-        } else if (state == Blocks.GRASS_BLOCK.defaultBlockState()) {
-            return a.state == Blocks.DIRT.defaultBlockState();
-        } else if (state == Blocks.WATER.defaultBlockState()) {
-            return a.state.getFluidState().getType() == Fluids.FLOWING_WATER;
-        } else if (state.getFluidState().getType() == Fluids.FLOWING_WATER) {
-            return a.state == Blocks.WATER.defaultBlockState();
-        } else if (state == Blocks.LAVA.defaultBlockState()) {
-            return a.state.getFluidState().getType() == Fluids.FLOWING_LAVA;
-        } else if (state.getFluidState().getType() == Fluids.FLOWING_LAVA) {
-            return a.state == Blocks.LAVA.defaultBlockState();
-        }
-
-        return false;
+        return BlockEntityBacteria.matchState(sample, state);
     }
 
     public void expand(BlockPos pos) {
@@ -101,10 +77,11 @@ public class BlockEntityBacteria extends BlockEntity {
             return;
         }
         level.setBlockAndUpdate(pos, getBlockState());
-        BlockEntityBacteria blockEntity = (BlockEntityBacteria) level.getBlockEntity(pos);
+        BlockEntityReplacer blockEntity = (BlockEntityReplacer) level.getBlockEntity(pos);
         assert blockEntity != null;
         blockEntity.id = id;
-        blockEntity.infected.addAll(infected);
+        blockEntity.sample = sample;
+        blockEntity.bacteria = bacteria;
     }
 
 
@@ -119,7 +96,24 @@ public class BlockEntityBacteria extends BlockEntity {
     }
 
     public void remove() {
-        level.setBlockAndUpdate(worldPosition, Blocks.AIR.defaultBlockState());
+        if (bacteria != null) {
+            final BlockState state = bacteria.state();
+            level.setBlockAndUpdate(worldPosition, state);
+            if (bacteria.nbt != null) {
+                if (level.getBlockEntity(worldPosition) != null) {
+                    final BlockEntity blockEntity = BlockEntity.loadStatic(
+                            worldPosition, state,
+                            bacteria.nbt,
+                            level.registryAccess()
+                    );
+                    if (blockEntity != null) {
+                        level.setBlockEntity(blockEntity);
+                    }
+                }
+            }
+        } else {
+            level.setBlockAndUpdate(worldPosition, Blocks.AIR.defaultBlockState());
+        }
     }
 
     public boolean isOutside(BlockPos pos) {
