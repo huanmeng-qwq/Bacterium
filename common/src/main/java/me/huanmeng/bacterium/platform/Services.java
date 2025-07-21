@@ -2,6 +2,7 @@ package me.huanmeng.bacterium.platform;
 
 import me.huanmeng.bacterium.Constants;
 import me.huanmeng.bacterium.platform.services.IPlatformHelper;
+import me.huanmeng.bacterium.platform.services.IRegister;
 
 import java.util.ServiceLoader;
 
@@ -14,6 +15,7 @@ public class Services {
     // For example this can be used to check if the code is running on Forge vs Fabric, or to ask the modloader if another
     // mod is loaded.
     public static final IPlatformHelper PLATFORM = load(IPlatformHelper.class);
+    public static final IRegister REGISTER = load(IRegister.class);
 
     // This code is used to load a service for the current environment. Your implementation of the service must be defined
     // manually by including a text file in META-INF/services named with the fully qualified class name of the service.

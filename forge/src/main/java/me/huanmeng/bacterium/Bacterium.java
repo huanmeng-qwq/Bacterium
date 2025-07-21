@@ -7,6 +7,5 @@ public class Bacterium {
 
     public Bacterium() {
         CommonClass.init();
-
     }
 }

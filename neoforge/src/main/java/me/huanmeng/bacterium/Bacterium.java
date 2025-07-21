@@ -1,6 +1,7 @@
 package me.huanmeng.bacterium;
 
 
+import me.huanmeng.bacterium.platform.NeoForgeRegister;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 
@@ -8,6 +9,8 @@ import net.neoforged.fml.common.Mod;
 public class Bacterium {
 
     public Bacterium(IEventBus eventBus) {
+        NeoForgeRegister.BLOCKS.register(eventBus);
+        NeoForgeRegister.BLOCK_TYPES.register(eventBus);
         CommonClass.init();
     }
 }
