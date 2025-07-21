@@ -36,6 +36,7 @@ public class BlockEntityReplacer extends BlockEntity {
         if (!isInvalidBacteria(bacteriaState) && !BlockEntityBacteria.isInvalidBlock(sampleState) && bacteriaState != sampleState) {
             bacteria = new Entry(bacteriaState);
             sample = new Entry(sampleState);
+            level.setBlockAndUpdate(worldPosition.above(), Blocks.AIR.defaultBlockState());
         }
     }
 
