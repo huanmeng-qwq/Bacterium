@@ -25,7 +25,7 @@ public class BacteriumCache {
         return currentUsedIds.contains(id);
     }
 
-    public static boolean markUsed(int id){
-        return currentUsedIds.add(id);
+    public static void markUsed(int id) {
+        currentUsedIds.add(id);
     }
 }

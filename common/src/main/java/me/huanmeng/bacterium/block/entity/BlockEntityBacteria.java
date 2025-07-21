@@ -2,7 +2,9 @@ package me.huanmeng.bacterium.block.entity;
 
 import me.huanmeng.bacterium.BacteriumCache;
 import me.huanmeng.bacterium.Constants;
+import me.huanmeng.bacterium.block.ModBlock;
 import me.huanmeng.bacterium.block.ModBlocks;
+import me.huanmeng.bacterium.type.ModBlockType;
 import me.huanmeng.bacterium.util.Entry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -13,7 +15,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,20 +51,21 @@ public class BlockEntityBacteria extends BlockEntity {
     public static boolean isInvalidBlock(BlockState state) {
         Block block = state.getBlock();
         return block == Blocks.BEDROCK ||
-//todo                block == Blocks.BACTERIA.getBlock() ||
+                block == ModBlocks.BACTERIA.get() ||
 //                block == Blocks.REPLACE.getBlock() ||
-                block == Blocks.BRICKS/* ||*/
-//                block == Blocks.JAMNER.getBlock()
+                block == Blocks.BRICKS ||
+                block == ModBlocks.JAMMER.get()
                 ;
     }
 
     public boolean isInfectBlock(BlockState state) {
         if (BacteriumCache.isUsed(id)) return false;
         if (infected.isEmpty()) return false;
-//todo        if(state.getBlock() == ModBlockType.JAMMER){
-//        BacteriumCache.markUsed(id);
-//            return false;
-//        }
+        if (state.getBlock() instanceof ModBlock block && block.getModBlockType() == ModBlockType.JAMMER) {
+            // remove all of this id
+            BacteriumCache.markUsed(id);
+            return false;
+        }
         return infected.stream().anyMatch(entry -> matchState(entry, state));
     }
 

@@ -3,6 +3,7 @@ package me.huanmeng.bacterium.block;
 import com.mojang.serialization.MapCodec;
 import me.huanmeng.bacterium.block.entity.BacteriaTicker;
 import me.huanmeng.bacterium.block.entity.BlockEntityBacteria;
+import me.huanmeng.bacterium.type.ModBlockType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -13,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockBacteria extends BaseEntityBlock {
+public class BlockBacteria extends BaseEntityBlock implements ModBlock {
     public static final MapCodec<BlockBacteria> CODEC = simpleCodec(BlockBacteria::new);
 
     public BlockBacteria(Properties properties) {
@@ -38,5 +39,10 @@ public class BlockBacteria extends BaseEntityBlock {
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return createTickerHelper(blockEntityType, ((BlockEntityType<BlockEntityBacteria>) ModBlocks.BLOCK_ENTITY_BACTERIA.get()), BacteriaTicker.INSTANCE);
+    }
+
+    @Override
+    public ModBlockType getModBlockType() {
+        return ModBlockType.BACTERIA;
     }
 }

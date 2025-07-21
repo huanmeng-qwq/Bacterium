@@ -1,46 +1,42 @@
 package me.huanmeng.bacterium.platform;
 
-import me.huanmeng.bacterium.block.BlockBacteria;
 import me.huanmeng.bacterium.block.ModBlocks;
-import me.huanmeng.bacterium.block.entity.BlockEntityBacteria;
 import me.huanmeng.bacterium.platform.services.IRegister;
-import me.huanmeng.bacterium.type.ModBlockType;
 import me.huanmeng.bacterium.type.ModEntityType;
 import me.huanmeng.bacterium.type.ModItemType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.BlockState;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ForgeRegister implements IRegister {
-    private static BlockBehaviour.Properties createProperties() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(1, 6);
+    @Override
+    public BlockBehaviour.Properties createProperties(final float destroyTime, final float explosionResistance) {
+        return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance);
     }
 
     @Override
-    public Supplier<Block> registerBlock(final ModBlockType block) {
-        final BlockBehaviour.Properties properties = createProperties();
-        Block obj = switch (block) {
-            case BACTERIA -> new BlockBacteria(properties.mapColor(MapColor.COLOR_PURPLE));
-            default -> throw new IllegalArgumentException("Unsupported block " + block);
-        };
-        Registry.register(BuiltInRegistries.BLOCK, ModBlocks.Namespaces.BACTERIA, obj);
-        return obj;
+    public Supplier<Block> registerBlock(final ResourceLocation location, final Function<BlockBehaviour.Properties, Block> blockFunction, final BlockBehaviour.Properties properties) {
+        final Block block = blockFunction.apply(properties);
+        Registry.register(BuiltInRegistries.BLOCK, location, block);
+        return () -> block;
     }
 
     @Override
-    public Supplier<BlockEntityType<?>> registerBlockEntityType(final ModBlockType block) {
-        BlockEntityType<?> type = switch (block) {
-            case BACTERIA -> BlockEntityType.Builder.of(BlockEntityBacteria::new, ModBlocks.BACTERIA.get()).build(null);
-            default -> throw new IllegalArgumentException("Unsupported block " + block);
-        };
-        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, ModBlocks.Namespaces.BACTERIA, type);
-        return type;
+    public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final ResourceLocation location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
+        BlockEntityType<?> type = BlockEntityType.Builder.of(blockEntityBiFunction::apply, blockSupplier.get()).build(null);
+        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, location, type);
+        return () -> type;
     }
 
     @Override

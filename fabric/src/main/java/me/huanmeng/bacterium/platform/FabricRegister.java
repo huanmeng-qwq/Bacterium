@@ -1,46 +1,43 @@
 package me.huanmeng.bacterium.platform;
 
 import com.google.common.base.Suppliers;
-import me.huanmeng.bacterium.block.BlockBacteria;
 import me.huanmeng.bacterium.block.ModBlocks;
-import me.huanmeng.bacterium.block.entity.BlockEntityBacteria;
 import me.huanmeng.bacterium.platform.services.IRegister;
-import me.huanmeng.bacterium.type.ModBlockType;
 import me.huanmeng.bacterium.type.ModEntityType;
 import me.huanmeng.bacterium.type.ModItemType;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.BlockState;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class FabricRegister implements IRegister {
 
-    public static final BlockBehaviour.Properties settings = BlockBehaviour.Properties.of().mapColor(
-            MapColor.COLOR_PURPLE).strength(1, 6);
-
     @Override
-    public Supplier<Block> registerBlock(final ModBlockType block) {
-        Block obj = switch (block) {
-            case BACTERIA -> new BlockBacteria(FabricBlockSettings.copyOf(settings).mapColor(MapColor.COLOR_PURPLE));
-            default -> throw new IllegalArgumentException("Unsupported block " + block);
-        };
-        Registry.register(BuiltInRegistries.BLOCK, ModBlocks.Namespaces.BACTERIA, obj);
-        return Suppliers.memoize(() -> obj);
+    public BlockBehaviour.Properties createProperties(float destroyTime, float explosionResistance) {
+        return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance);
     }
 
     @Override
-    public Supplier<BlockEntityType<?>> registerBlockEntityType(final ModBlockType block) {
-        BlockEntityType<?> type = switch (block) {
-            case BACTERIA -> BlockEntityType.Builder.of(BlockEntityBacteria::new, ModBlocks.BACTERIA.get()).build(null);
-            default -> throw new IllegalArgumentException("Unsupported block " + block);
-        };
-        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, ModBlocks.Namespaces.BACTERIA, type);
+    public Supplier<Block> registerBlock(final ResourceLocation location, final Function<BlockBehaviour.Properties, Block> blockFunction, final BlockBehaviour.Properties properties) {
+        final Block block = blockFunction.apply(properties);
+        Registry.register(BuiltInRegistries.BLOCK, location, block);
+        return Suppliers.memoize(() -> block);
+    }
+
+    @Override
+    public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final ResourceLocation location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
+        BlockEntityType<?> type = BlockEntityType.Builder.of(blockEntityBiFunction::apply, blockSupplier.get()).build(null);
+        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, location, type);
         return Suppliers.memoize(() -> type);
     }
 
