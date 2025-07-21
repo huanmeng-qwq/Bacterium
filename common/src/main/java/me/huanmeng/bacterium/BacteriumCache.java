@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BacteriumCache {
     private static final Set<Integer> currentUsedIds = new LinkedHashSet<>();
     public static boolean jammedAll;
+    public static int jammedCount;
 
     public static int freeId() {
         int id = ThreadLocalRandom.current().nextInt();

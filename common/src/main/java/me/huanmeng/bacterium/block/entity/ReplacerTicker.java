@@ -19,6 +19,7 @@ public class ReplacerTicker implements BlockEntityTicker<BlockEntityReplacer> {
         blockEntity.setChanged();
         if (BacteriumCache.jammedAll || BacteriumCache.isUsed(blockEntity.id)) {
             blockEntity.remove();
+            BacteriumCache.jammedCount++;
             return;
         }
         if (blockEntity.bacteria == null || blockEntity.sample == null) {

@@ -19,6 +19,7 @@ public class BacteriaTicker implements BlockEntityTicker<BlockEntityBacteria> {
         blockEntity.setChanged();
         if (BacteriumCache.jammedAll || BacteriumCache.isUsed(blockEntity.id)) {
             blockEntity.remove();
+            BacteriumCache.jammedCount++;
             return;
         }
         if (blockEntity.infected.isEmpty()) {
