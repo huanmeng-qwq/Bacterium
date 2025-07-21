@@ -1,10 +1,8 @@
 package me.huanmeng.bacterium.platform;
 
 import com.google.common.base.Suppliers;
-import me.huanmeng.bacterium.block.ModBlocks;
 import me.huanmeng.bacterium.platform.services.IRegister;
 import me.huanmeng.bacterium.type.ModEntityType;
-import me.huanmeng.bacterium.type.ModItemType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -42,8 +40,10 @@ public class FabricRegister implements IRegister {
     }
 
     @Override
-    public Supplier<Item> registerItem(final ModItemType item) {
-        return null;
+    public Supplier<Item> registerItem(final ResourceLocation location, final Function<Item.Properties, Item> itemFunction, final Item.Properties properties) {
+        final Item item = itemFunction.apply(properties);
+        Registry.register(BuiltInRegistries.ITEM, location, item);
+        return Suppliers.memoize(() -> item);
     }
 
     @Override

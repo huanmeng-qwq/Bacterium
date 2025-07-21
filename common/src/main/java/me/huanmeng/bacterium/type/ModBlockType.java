@@ -4,5 +4,6 @@ public enum ModBlockType {
     BACTERIA,
     REPLACER,
     JAMMER,
+    MUST,
     ;
 }

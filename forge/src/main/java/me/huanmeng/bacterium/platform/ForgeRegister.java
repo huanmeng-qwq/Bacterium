@@ -3,7 +3,6 @@ package me.huanmeng.bacterium.platform;
 import me.huanmeng.bacterium.Constants;
 import me.huanmeng.bacterium.platform.services.IRegister;
 import me.huanmeng.bacterium.type.ModEntityType;
-import me.huanmeng.bacterium.type.ModItemType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +21,7 @@ import java.util.function.Supplier;
 
 public class ForgeRegister implements IRegister {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Constants.MOD_ID);
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Constants.MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_TYPES = DeferredRegister.create(
             ForgeRegistries.BLOCK_ENTITY_TYPES,
             Constants.MOD_ID
@@ -29,6 +29,7 @@ public class ForgeRegister implements IRegister {
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
+        ITEMS.register(bus);
         BLOCK_TYPES.register(bus);
     }
 
@@ -54,8 +55,10 @@ public class ForgeRegister implements IRegister {
     }
 
     @Override
-    public Supplier<Item> registerItem(final ModItemType item) {
-        return null;
+    public Supplier<Item> registerItem(final ResourceLocation location, final Function<Item.Properties, Item> itemFunction, final Item.Properties properties) {
+        return ITEMS.register(
+                location.getPath(),
+                () -> itemFunction.apply(properties));
     }
 
     @Override
