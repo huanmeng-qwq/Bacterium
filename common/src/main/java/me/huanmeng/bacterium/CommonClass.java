@@ -22,6 +22,7 @@ public class CommonClass {
 
     private static void registerItems() {
         ModItems.BUNCH = Services.REGISTER.registerItem(ModItems.Namespaces.BUNCH, ItemBunch::new, new Item.Properties());
+        ModItems.JAMMER = Services.REGISTER.registerItem(ModItems.Namespaces.JAMMER, ItemJammer::new, new Item.Properties().durability(32));
     }
 
     private static void registerBlocks() {
