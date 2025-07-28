@@ -3,11 +3,15 @@ package me.huanmeng.bacterium.platform;
 import me.huanmeng.bacterium.Constants;
 import me.huanmeng.bacterium.platform.services.IRegister;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,12 +34,14 @@ public class ForgeRegister implements IRegister {
             Constants.MOD_ID
     );
     private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Constants.MOD_ID);
+    private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Constants.MOD_ID);
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
         ITEMS.register(bus);
         BLOCK_TYPES.register(bus);
         ENTITIES.register(bus);
+        CREATIVE_MODE_TAB.register(bus);
     }
 
 
@@ -75,5 +82,16 @@ public class ForgeRegister implements IRegister {
                         .updateInterval(updateInterval)
                         .build(location.getPath())
         );
+    }
+
+    @Override
+    public void initCreativeModeTab(final ResourceLocation location, final Supplier<ItemStack> icon, final List<Supplier<Item>> items) {
+        CREATIVE_MODE_TAB.register(location.getPath(), () -> CreativeModeTab.builder()
+                .icon(icon)
+                .title(Component.translatable("itemGroup.bacterium.bacterium"))
+                .displayItems((itemDisplayParameters, output) -> {
+                    items.forEach(item -> output.accept(item.get()));
+                })
+                .build());
     }
 }

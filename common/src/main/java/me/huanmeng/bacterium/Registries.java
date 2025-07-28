@@ -14,16 +14,27 @@ import me.huanmeng.bacterium.item.ItemJammer;
 import me.huanmeng.bacterium.item.ItemSplashBacteria;
 import me.huanmeng.bacterium.item.ModItems;
 import me.huanmeng.bacterium.platform.Services;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.MapColor;
+import java.util.Arrays;
 
 public class Registries {
     public static void init() {
         registerItems();
         registerBlocks();
         registerEntities();
+        Services.REGISTER.initCreativeModeTab(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, Constants.MOD_ID), () -> ModItems.REPLACER.get().getDefaultInstance(), Arrays.asList(
+                ModItems.BUNCH,
+                ModItems.JAMMER,
+                ModItems.POTION,
+                ModItems.BACTERIA,
+                ModItems.REPLACER,
+                ModItems.BLOCK_JAMMER,
+                ModItems.MUST
+        ));
     }
 
     private static void registerItems() {
