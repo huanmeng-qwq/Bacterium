@@ -2,12 +2,14 @@ package me.huanmeng.bacterium.platform;
 
 import me.huanmeng.bacterium.Constants;
 import me.huanmeng.bacterium.platform.services.IRegister;
-import me.huanmeng.bacterium.type.ModEntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -32,11 +34,16 @@ public class NeoForgeRegister implements IRegister {
             BuiltInRegistries.BLOCK_ENTITY_TYPE,
             Constants.MOD_ID
     );
+    private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(
+            BuiltInRegistries.ENTITY_TYPE,
+            Constants.MOD_ID
+    );
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
         ITEMS.register(bus);
         BLOCK_TYPES.register(bus);
+        ENTITIES.register(bus);
     }
 
     @Override
@@ -67,7 +74,14 @@ public class NeoForgeRegister implements IRegister {
     }
 
     @Override
-    public Supplier<Entity> registerEntity(final ModEntityType entity) {
-        return null;
+    public <T extends Entity> Supplier<EntityType<T>> registerEntity(final ResourceLocation location, final MobCategory mobCategory, final BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval) {
+        return ENTITIES.register(
+                location.getPath(),
+                () -> EntityType.Builder.of(entityFunction::apply, mobCategory)
+                        .sized(width, height)
+                        .clientTrackingRange(trackingRange)
+                        .updateInterval(updateInterval)
+                        .build(location.getPath())
+        );
     }
 }

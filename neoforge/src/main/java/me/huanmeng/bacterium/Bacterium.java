@@ -10,6 +10,6 @@ public class Bacterium {
 
     public Bacterium(IEventBus eventBus) {
         NeoForgeRegister.register(eventBus);
-        CommonClass.init();
+        Registries.init();
     }
 }

@@ -1,10 +1,12 @@
 package me.huanmeng.bacterium.platform.services;
 
-import me.huanmeng.bacterium.type.ModEntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -23,5 +25,5 @@ public interface IRegister {
 
     Supplier<Item> registerItem(ResourceLocation location, Function<Item.Properties, Item> itemFunction, Item.Properties properties);
 
-    Supplier<Entity> registerEntity(ModEntityType entity);
+    <T extends Entity> Supplier<EntityType<T>> registerEntity(final ResourceLocation location, MobCategory mobCategory, BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval);
 }

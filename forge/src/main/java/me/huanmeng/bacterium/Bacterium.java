@@ -9,6 +9,6 @@ public class Bacterium {
 
     public Bacterium(FMLJavaModLoadingContext context) {
         ForgeRegister.register(context.getModEventBus());
-        CommonClass.init();
+        Registries.init();
     }
 }

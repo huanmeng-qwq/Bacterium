@@ -6,6 +6,6 @@ public class Bacterium implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CommonClass.init();
+        Registries.init();
     }
 }

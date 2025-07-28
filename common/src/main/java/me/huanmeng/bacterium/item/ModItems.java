@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 public class ModItems {
     public static Supplier<Item> BUNCH;
     public static Supplier<Item> JAMMER;
+    public static Supplier<Item> POTION;
 
     // Block
     public static Supplier<Item> BACTERIA;
@@ -19,5 +20,6 @@ public class ModItems {
     public static class Namespaces {
         public static final ResourceLocation BUNCH = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "bunch");
         public static final ResourceLocation JAMMER = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "jammeritem");
+        public static final ResourceLocation POTION = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "potion");
     }
 }

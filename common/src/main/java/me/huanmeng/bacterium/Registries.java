@@ -7,15 +7,19 @@ import me.huanmeng.bacterium.block.BlockReplacer;
 import me.huanmeng.bacterium.block.ModBlocks;
 import me.huanmeng.bacterium.block.entity.BlockEntityBacteria;
 import me.huanmeng.bacterium.block.entity.BlockEntityReplacer;
+import me.huanmeng.bacterium.entity.ModEntities;
+import me.huanmeng.bacterium.entity.PotionEntityBacteria;
 import me.huanmeng.bacterium.item.ItemBunch;
 import me.huanmeng.bacterium.item.ItemJammer;
+import me.huanmeng.bacterium.item.ItemSplashBacteria;
 import me.huanmeng.bacterium.item.ModItems;
 import me.huanmeng.bacterium.platform.Services;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.MapColor;
 
-public class CommonClass {
+public class Registries {
     public static void init() {
         registerItems();
         registerBlocks();
@@ -25,6 +29,7 @@ public class CommonClass {
     private static void registerItems() {
         ModItems.BUNCH = Services.REGISTER.registerItem(ModItems.Namespaces.BUNCH, ItemBunch::new, new Item.Properties());
         ModItems.JAMMER = Services.REGISTER.registerItem(ModItems.Namespaces.JAMMER, ItemJammer::new, new Item.Properties().durability(32));
+        ModItems.POTION = Services.REGISTER.registerItem(ModItems.Namespaces.POTION, ItemSplashBacteria::new, new Item.Properties());
     }
 
     private static void registerBlocks() {
@@ -67,6 +72,12 @@ public class CommonClass {
     }
 
     private static void registerEntities() {
-
+        ModEntities.POTION = Services.REGISTER.registerEntity(
+                ModEntities.Namespaces.POTION,
+                MobCategory.MISC,
+                PotionEntityBacteria::new,
+                0.25F, 0.25F,
+                4, 10
+        );
     }
 }

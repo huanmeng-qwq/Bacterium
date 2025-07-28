@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class BlockEntityBacteria extends BlockEntity {
     protected int id;
@@ -40,16 +41,17 @@ public class BlockEntityBacteria extends BlockEntity {
         BlockState state;
         BlockPos pos = worldPosition.above();
         while (!(state = level.getBlockState(pos)).isAir()) {
-            addInfectBlock(state, pos);
+            final BlockPos finalPos = pos;
+            addInfectBlock(state, () -> level.getBlockEntity(finalPos));
             pos = pos.above();
         }
     }
 
-    public void addInfectBlock(BlockState state, BlockPos pos) {
+    public void addInfectBlock(BlockState state, Supplier<BlockEntity> blockEntity) {
         if (isInvalidBlock(state)) {
             return;
         }
-        infected.add(new Entry(state, level, level.getBlockEntity(pos)));
+        infected.add(new Entry(state, level, blockEntity.get()));
     }
 
     public static boolean isInvalidBlock(BlockState state) {

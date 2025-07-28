@@ -2,13 +2,15 @@ package me.huanmeng.bacterium.platform;
 
 import com.google.common.base.Suppliers;
 import me.huanmeng.bacterium.platform.services.IRegister;
-import me.huanmeng.bacterium.type.ModEntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -47,7 +49,13 @@ public class FabricRegister implements IRegister {
     }
 
     @Override
-    public Supplier<Entity> registerEntity(final ModEntityType entity) {
-        return null;
+    public <T extends Entity> Supplier<EntityType<T>> registerEntity(final ResourceLocation location, final MobCategory mobCategory, final BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval) {
+        final EntityType<T> type = EntityType.Builder.of(entityFunction::apply, mobCategory)
+                .sized(width, height)
+                .clientTrackingRange(trackingRange)
+                .updateInterval(updateInterval)
+                .build(location.getPath());
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, location, type);
+        return Suppliers.memoize(() -> type);
     }
 }
