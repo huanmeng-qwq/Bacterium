@@ -8,8 +8,10 @@ import me.huanmeng.bacterium.block.ModBlocks;
 import me.huanmeng.bacterium.block.entity.BlockEntityBacteria;
 import me.huanmeng.bacterium.block.entity.BlockEntityReplacer;
 import me.huanmeng.bacterium.item.ItemBunch;
+import me.huanmeng.bacterium.item.ItemJammer;
 import me.huanmeng.bacterium.item.ModItems;
 import me.huanmeng.bacterium.platform.Services;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.MapColor;
 
@@ -40,6 +42,28 @@ public class CommonClass {
                 Services.REGISTER.createProperties(1, 6).mapColor(MapColor.TERRACOTTA_GREEN));
         ModBlocks.BLOCK_ENTITY_BACTERIA = Services.REGISTER.registerBlockEntityType(ModBlocks.Namespaces.BACTERIA, BlockEntityBacteria::new, ModBlocks.BACTERIA);
         ModBlocks.BLOCK_ENTITY_REPLACER = Services.REGISTER.registerBlockEntityType(ModBlocks.Namespaces.REPLACER, BlockEntityReplacer::new, ModBlocks.REPLACER);
+
+        // BlockItem
+        ModItems.BACTERIA = Services.REGISTER.registerItem(
+                ModBlocks.Namespaces.BACTERIA,
+                settings -> new BlockItem(ModBlocks.BACTERIA.get(), settings),
+                new Item.Properties()
+        );
+        ModItems.REPLACER = Services.REGISTER.registerItem(
+                ModBlocks.Namespaces.REPLACER,
+                settings -> new BlockItem(ModBlocks.REPLACER.get(), settings),
+                new Item.Properties()
+        );
+        ModItems.BLOCK_JAMMER = Services.REGISTER.registerItem(
+                ModBlocks.Namespaces.JAMMER,
+                settings -> new BlockItem(ModBlocks.JAMMER.get(), settings),
+                new Item.Properties()
+        );
+        ModItems.MUST = Services.REGISTER.registerItem(
+                ModBlocks.Namespaces.MUST,
+                settings -> new BlockItem(ModBlocks.MUST.get(), settings),
+                new Item.Properties()
+        );
     }
 
     private static void registerEntities() {
