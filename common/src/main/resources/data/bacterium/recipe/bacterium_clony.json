@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "BRB",
+    " B "
+  ],
+  "key": {
+    "B": {
+      "item": "bacterium:bunch"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    }
+  },
+  "result": {
+    "id": "bacterium:bacterium_colony"
+  }
+}
