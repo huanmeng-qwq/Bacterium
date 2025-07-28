@@ -70,7 +70,7 @@ public class BlockMust extends Block implements ModBlock {
 
     @Override
     protected void randomTick(final BlockState state, final ServerLevel level, final BlockPos pos, final RandomSource random) {
-        if (!level.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
         final FluidState fluidState = level.getFluidState(pos.above());
