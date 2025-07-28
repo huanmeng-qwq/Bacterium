@@ -16,12 +16,12 @@ subprojects {
         type = STABLE
         curseforge {
             projectId = "412035"
-            accessToken = providers.gradleProperty("CURSEFORGE_TOKEN")
+            accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
             minecraftVersions.add(minecraft_version)
         }
         modrinth {
             projectId = "bacteriums"
-            accessToken = providers.gradleProperty("MODRINTH_TOKEN")
+            accessToken = providers.environmentVariable("MODRINTH_TOKEN")
             minecraftVersions.add(minecraft_version)
         }
         github {
