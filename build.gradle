@@ -3,4 +3,26 @@ plugins {
     id 'fabric-loom' version '1.8-SNAPSHOT' apply false
     // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
     id 'net.neoforged.moddev' version '2.0.49-beta' apply false
+
+    id "me.modmuss50.mod-publish-plugin" version "0.8.4" apply false
+}
+
+subprojects {
+    if (name !in [":fabric", ":neoforge", ":forge"]) {
+        return
+    }
+    publishMods {
+        changelog = "Update version $version"
+        type = STABLE
+        curseforge {
+            projectId = "412035"
+            accessToken = providers.gradleProperty("CURSEFORGE_TOKEN")
+            minecraftVersions.add(minecraft_version)
+        }
+        modrinth {
+            projectId = "bacteriums"
+            accessToken = providers.gradleProperty("MODRINTH_TOKEN")
+            minecraftVersions.add(minecraft_version)
+        }
+    }
 }
