@@ -14,6 +14,7 @@ subprojects {
     publishMods {
         changelog = "Update version $version"
         type = STABLE
+        displayName = "$minecraft_version-$version-${name.replace(':', "")}"
         curseforge {
             projectId = "412035"
             accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
