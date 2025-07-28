@@ -87,7 +87,7 @@ public class BlockMust extends Block implements ModBlock {
             meta = 0;
         }
         if (meta != old) {
-            level.setBlockAndUpdate(pos.above(), state.setValue(GROWN, meta));
+            level.setBlockAndUpdate(pos, state.setValue(GROWN, meta));
         }
     }
 
