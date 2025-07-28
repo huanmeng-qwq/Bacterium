@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class Entry {
     private static final JsonOps JSONOPS = JsonOps.COMPRESSED;
