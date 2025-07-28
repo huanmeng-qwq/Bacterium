@@ -24,5 +24,11 @@ subprojects {
             accessToken = providers.gradleProperty("MODRINTH_TOKEN")
             minecraftVersions.add(minecraft_version)
         }
+        github {
+            accessToken = providers.environmentVariable("GITHUB_TOKEN")
+            repository = "huanmeng-qwq/Bacterium"
+            commitish = "master"
+            tagName = "release/$minecraft_version-$version"
+        }
     }
 }
