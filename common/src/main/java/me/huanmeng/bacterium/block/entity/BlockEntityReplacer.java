@@ -7,14 +7,13 @@ import me.huanmeng.bacterium.block.ModBlocks;
 import me.huanmeng.bacterium.type.ModBlockType;
 import me.huanmeng.bacterium.util.Entry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class BlockEntityReplacer extends BlockEntity {
     protected int id;
@@ -114,37 +113,33 @@ public class BlockEntityReplacer extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (!tag.contains(Constants.MOD_ID)) {
+    protected void loadAdditional(final ValueInput input) {
+        super.loadAdditional(input);
+        if (input.child(Constants.MOD_ID).isEmpty()) {
             return;
         }
-        final CompoundTag main = tag.getCompound(Constants.MOD_ID).orElseThrow();
-        if (main.contains("id")) {
+        final ValueInput main = input.child(Constants.MOD_ID).orElseThrow();
+        if (main.getInt("id").isPresent()) {
             this.id = main.getInt("id").orElseThrow();
         }
-        if (main.contains("bacteria")) {
-            Entry.CODEC.decode(NbtOps.INSTANCE, main.get("bacteria")).result().ifPresent(e -> {
-                this.bacteria = e.getFirst();
-            });
+        if (main.child("bacteria").isPresent()) {
+            this.bacteria = main.child("bacteria").flatMap(e -> e.read(Entry.CODEC)).orElseThrow();
+
         }
-        if (main.contains("sample")) {
-            Entry.CODEC.decode(NbtOps.INSTANCE, main.get("sample")).result().ifPresent(e -> {
-                this.sample = e.getFirst();
-            });
+        if (main.child("sample").isPresent()) {
+            this.sample = main.child("sample").flatMap(e -> e.read(Entry.CODEC)).orElseThrow();
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        final CompoundTag main = new CompoundTag();
+    protected void saveAdditional(final ValueOutput output) {
+        super.saveAdditional(output);
+        final ValueOutput main = output.child(Constants.MOD_ID);
         main.putInt("id", id);
         if (bacteria != null)
-            main.put("bacteria", bacteria.toNbt());
+            bacteria.write(main.child("bacteria"));
         if (sample != null)
-            main.put("sample", sample.toNbt());
-        tag.put(Constants.MOD_ID, main);
+            sample.write(main.child("sample"));
     }
 
 }

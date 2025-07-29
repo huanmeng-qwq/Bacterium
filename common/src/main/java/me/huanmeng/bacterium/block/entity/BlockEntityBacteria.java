@@ -7,11 +7,6 @@ import me.huanmeng.bacterium.block.ModBlocks;
 import me.huanmeng.bacterium.type.ModBlockType;
 import me.huanmeng.bacterium.util.Entry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -19,6 +14,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -135,37 +132,32 @@ public class BlockEntityBacteria extends BlockEntity {
         return pos.getY() > level.getMaxY() || pos.getY() < level.getMinY();
     }
 
-    @SuppressWarnings("DuplicatedCode")
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (!tag.contains(Constants.MOD_ID)) {
+    protected void loadAdditional(final ValueInput input) {
+        super.loadAdditional(input);
+        if (input.child(Constants.MOD_ID).isEmpty()) {
             return;
         }
-        final CompoundTag main = tag.getCompound(Constants.MOD_ID).orElseThrow();
-        if (main.contains("id")) {
+        final ValueInput main = input.child(Constants.MOD_ID).orElseThrow();
+        if (main.getInt("id").isPresent()) {
             this.id = main.getInt("id").orElseThrow();
         }
-        if (main.contains("entries")) {
-            final ListTag entries = main.getList("entries").orElseThrow();
-            for (final Tag entry : entries) {
-                Entry.CODEC.decode(NbtOps.INSTANCE, entry)
-                        .result()
-                        .ifPresent(e -> this.infected.add(e.getFirst()));
+        if (main.childrenList("entries").isPresent()) {
+            final ValueInput.ValueInputList entries = main.childrenList("entries").orElseThrow();
+            for (final ValueInput entry : entries) {
+                entry.read(Entry.CODEC).map(this.infected::add);
             }
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        final CompoundTag main = new CompoundTag();
+    protected void saveAdditional(final ValueOutput output) {
+        super.saveAdditional(output);
+        final ValueOutput main = output.child(Constants.MOD_ID);
         main.putInt("id", id);
-        final ListTag entries = new ListTag();
+        final ValueOutput.ValueOutputList entries = main.childrenList("entries");
         for (final Entry entry : infected) {
-            entries.add(entry.toNbt());
+            entry.write(entries.addChild());
         }
-        main.put("entries", entries);
-        tag.put(Constants.MOD_ID, main);
     }
 }

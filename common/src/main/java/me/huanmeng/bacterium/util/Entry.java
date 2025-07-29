@@ -6,19 +6,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.storage.ValueOutput;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Entry {
     private static final JsonOps JSONOPS = JsonOps.COMPRESSED;
-    public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<Entry> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("block").forGetter(e -> e.state.getBlockHolder().getRegisteredName()),
             CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(e -> Optional.ofNullable(e.nbt)),
             //
@@ -116,8 +116,8 @@ public class Entry {
         return entry;
     }
 
-    public Tag toNbt() {
-        return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+    public void write(ValueOutput output) {
+        output.store(CODEC, this);
     }
 
     @Override
