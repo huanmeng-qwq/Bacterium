@@ -25,7 +25,7 @@ subprojects {
                 minecraftVersions.add(minecraft_version)
             }
             modrinth {
-                projectId = "bacteriums"
+                projectId = "CtYK1BTD"
                 accessToken = providers.environmentVariable("MODRINTH_TOKEN")
                 minecraftVersions.add(minecraft_version)
             }
