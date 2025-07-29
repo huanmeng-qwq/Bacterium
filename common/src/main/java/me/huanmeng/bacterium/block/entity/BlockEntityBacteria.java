@@ -1,6 +1,5 @@
 package me.huanmeng.bacterium.block.entity;
 
-import com.mojang.datafixers.util.Pair;
 import me.huanmeng.bacterium.BacteriumCache;
 import me.huanmeng.bacterium.Constants;
 import me.huanmeng.bacterium.block.ModBlock;
@@ -140,20 +139,19 @@ public class BlockEntityBacteria extends BlockEntity {
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (!tag.contains(Constants.MOD_ID, Tag.TAG_COMPOUND)) {
+        if (!tag.contains(Constants.MOD_ID)) {
             return;
         }
-        final CompoundTag main = tag.getCompound(Constants.MOD_ID);
-        if (main.contains("id", Tag.TAG_INT)) {
-            this.id = main.getInt("id");
+        final CompoundTag main = tag.getCompound(Constants.MOD_ID).orElseThrow();
+        if (main.contains("id")) {
+            this.id = main.getInt("id").orElseThrow();
         }
         if (main.contains("entries")) {
-            final ListTag entries = main.getList("entries", Tag.TAG_COMPOUND);
+            final ListTag entries = main.getList("entries").orElseThrow();
             for (final Tag entry : entries) {
-                final Pair<Entry, Tag> e = Entry.CODEC.decode(NbtOps.INSTANCE, entry).result().orElse(null);
-                if (e != null) {
-                    this.infected.add(e.getFirst());
-                }
+                Entry.CODEC.decode(NbtOps.INSTANCE, entry)
+                        .result()
+                        .ifPresent(e -> this.infected.add(e.getFirst()));
             }
         }
     }

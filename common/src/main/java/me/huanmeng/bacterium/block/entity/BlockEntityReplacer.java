@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -117,12 +116,12 @@ public class BlockEntityReplacer extends BlockEntity {
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (!tag.contains(Constants.MOD_ID, Tag.TAG_COMPOUND)) {
+        if (!tag.contains(Constants.MOD_ID)) {
             return;
         }
-        final CompoundTag main = tag.getCompound(Constants.MOD_ID);
-        if (main.contains("id", Tag.TAG_INT)) {
-            this.id = main.getInt("id");
+        final CompoundTag main = tag.getCompound(Constants.MOD_ID).orElseThrow();
+        if (main.contains("id")) {
+            this.id = main.getInt("id").orElseThrow();
         }
         if (main.contains("bacteria")) {
             Entry.CODEC.decode(NbtOps.INSTANCE, main.get("bacteria")).result().ifPresent(e -> {
