@@ -13,12 +13,15 @@ subprojects {
     }
     afterEvaluate {
         publishMods {
-            changelog = "Update version $version"
+            changelog = "Update version ${project.version}"
             type = STABLE
             displayName = "[${project.name.replace(':', '')} $minecraft_version] v${project.version}"
             curseforge {
                 projectId = "412035"
                 accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+                clientRequired = true
+                serverRequired = true
+                javaVersions.add(JavaVersion.VERSION_21)
                 minecraftVersions.add(minecraft_version)
             }
             modrinth {
