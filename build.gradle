@@ -15,7 +15,7 @@ subprojects {
         publishMods {
             changelog = "Update version $version"
             type = STABLE
-            displayName = "${project.name.replace(':', '')}-${project.version}+$minecraft_version"
+            displayName = "[${project.name.replace(':', '')} $minecraft_version] v${project.version}"
             curseforge {
                 projectId = "412035"
                 accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
@@ -30,7 +30,7 @@ subprojects {
                 accessToken = providers.environmentVariable("GITHUB_TOKEN")
                 repository = "huanmeng-qwq/Bacterium"
                 commitish = "master"
-                tagName = "release/$minecraft_version-$version"
+                tagName = "release/$minecraft_version-${project.version}"
             }
         }
     }
