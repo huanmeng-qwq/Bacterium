@@ -6,15 +6,9 @@
     "WBW"
   ],
   "key": {
-    "B": {
-      "item": "minecraft:water_bucket"
-    },
-    "F": {
-      "item": "minecraft:dandelion"
-    },
-    "W": {
-      "tag": "minecraft:wool"
-    }
+    "B": "minecraft:water_bucket",
+    "F": "minecraft:dandelion",
+    "W": "#minecraft:wool"
   },
   "result": {
     "id": "minecraft:sponge"

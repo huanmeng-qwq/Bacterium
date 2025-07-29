@@ -6,18 +6,10 @@
     "CRC"
   ],
   "key": {
-    "C": {
-      "item": "minecraft:cobblestone"
-    },
-    "B": {
-      "item": "bacterium:bacterium_colony"
-    },
-    "R": {
-      "item": "minecraft:redstone_torch"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    }
+    "C": "minecraft:cobblestone",
+    "B": "bacterium:bacterium_colony",
+    "R": "minecraft:redstone_torch",
+    "I": "minecraft:iron_ingot"
   },
   "result": {
     "id": "bacterium:jammer"

@@ -5,15 +5,9 @@
     " W "
   ],
   "key": {
-    "B": {
-      "item": "minecraft:bread"
-    },
-    "S": {
-      "item": "minecraft:sponge"
-    },
-    "W": {
-      "item": "minecraft:water_bucket"
-    }
+    "B": "minecraft:bread",
+    "S": "minecraft:sponge",
+    "W": "minecraft:water_bucket"
   },
   "result": {
     "id": "bacterium:must"

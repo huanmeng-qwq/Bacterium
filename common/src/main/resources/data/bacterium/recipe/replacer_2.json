@@ -6,12 +6,8 @@
     " B "
   ],
   "key": {
-    "B": {
-      "item": "bacterium:bacterium_colony"
-    },
-    "C": {
-      "item": "minecraft:coal"
-    }
+    "B": "bacterium:bacterium_colony",
+    "C": "minecraft:coal"
   },
   "result": {
     "id": "bacterium:replacer",
