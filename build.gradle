@@ -4,7 +4,17 @@ plugins {
     // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
     id 'net.neoforged.moddev' version '2.0.49-beta' apply false
 
-    id "me.modmuss50.mod-publish-plugin" version "0.8.4" apply false
+    id "me.modmuss50.mod-publish-plugin" version "0.8.4"
+}
+publishMods {
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = "huanmeng-qwq/Bacterium"
+        commitish = "master"
+        tagName = "release/$minecraft_version-${project.version}"
+        announcementTitle = "[Bacterium $minecraft_version] v${project.version}"
+        allowEmptyFiles = true
+    }
 }
 
 subprojects {
@@ -31,9 +41,7 @@ subprojects {
             }
             github {
                 accessToken = providers.environmentVariable("GITHUB_TOKEN")
-                repository = "huanmeng-qwq/Bacterium"
-                commitish = "master"
-                tagName = "release/$minecraft_version-${project.version}"
+                parent project(":").tasks.named("publishGithub")
             }
         }
     }
