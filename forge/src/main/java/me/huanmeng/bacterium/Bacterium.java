@@ -8,7 +8,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class Bacterium {
 
     public Bacterium(FMLJavaModLoadingContext context) {
-        ForgeRegister.register(context.getModEventBus());
+        ForgeRegister.register(context.getModBusGroup());
         Registries.init();
     }
 }
