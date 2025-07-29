@@ -8,6 +8,7 @@
   "block.bacterium.jammer": "Bacterium Jammer",
   "bacterium.item.jammeritem.rightclick.message": "Clean up bacteria...",
   "bacterium.item.jammeritem.jammed.message": "%s bacteria were removed.",
+  "item.bacterium.potion": "Bacterium Splash Potion",
   "item.bacterium.potion.effect.awkward": "Bacterium Splash Potion",
   "item.bacterium.potion.effect.empty": "Bacterium Splash Potion",
   "item.bacterium.potion.effect.fire_resistance": "Bacterium Splash Potion",
