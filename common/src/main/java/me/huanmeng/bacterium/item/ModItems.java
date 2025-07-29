@@ -3,7 +3,7 @@ package me.huanmeng.bacterium.item;
 import me.huanmeng.bacterium.Constants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ModItems {
@@ -16,6 +16,10 @@ public class ModItems {
     public static Supplier<Item> REPLACER;
     public static Supplier<Item> BLOCK_JAMMER;
     public static Supplier<Item> MUST;
+
+    public static List<Supplier<Item>> items() {
+        return List.of(BUNCH, JAMMER, POTION, BACTERIA, REPLACER, BLOCK_JAMMER, MUST);
+    }
 
     public static class Namespaces {
         public static final ResourceLocation BUNCH = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "bunch");
