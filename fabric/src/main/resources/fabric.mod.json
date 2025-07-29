@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "me.huanmeng.bacterium.Bacterium"
+    ],
+    "fabric-datagen": [
+      "me.huanmeng.bacterium.datagen.BacteriumDataGen"
     ]
   },
   "depends": {
