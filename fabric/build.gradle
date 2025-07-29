@@ -40,6 +40,16 @@ loom {
     }
 }
 
+/*
+fabricApi {
+    configureDataGeneration() {
+        client = true
+        outputDirectory = project(":common").file("src/main/resources")
+    }
+}
+*/
+
+
 publishMods {
     file = tasks.remapJar.archiveFile
     modLoaders.add("fabric")
