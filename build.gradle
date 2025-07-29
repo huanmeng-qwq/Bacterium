@@ -8,28 +8,30 @@ plugins {
 }
 
 subprojects {
-    if (name !in [":fabric", ":neoforge", ":forge"]) {
+    if (name !in ["fabric", "neoforge", "forge"]) {
         return
     }
-    publishMods {
-        changelog = "Update version $version"
-        type = STABLE
-        displayName = "$minecraft_version-$version-${name.replace(':', "")}"
-        curseforge {
-            projectId = "412035"
-            accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
-            minecraftVersions.add(minecraft_version)
-        }
-        modrinth {
-            projectId = "bacteriums"
-            accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-            minecraftVersions.add(minecraft_version)
-        }
-        github {
-            accessToken = providers.environmentVariable("GITHUB_TOKEN")
-            repository = "huanmeng-qwq/Bacterium"
-            commitish = "master"
-            tagName = "release/$minecraft_version-$version"
+    afterEvaluate {
+        publishMods {
+            changelog = "Update version $version"
+            type = STABLE
+            displayName = "${project.name.replace(':', '')}-${project.version}+$minecraft_version"
+            curseforge {
+                projectId = "412035"
+                accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+                minecraftVersions.add(minecraft_version)
+            }
+            modrinth {
+                projectId = "bacteriums"
+                accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+                minecraftVersions.add(minecraft_version)
+            }
+            github {
+                accessToken = providers.environmentVariable("GITHUB_TOKEN")
+                repository = "huanmeng-qwq/Bacterium"
+                commitish = "master"
+                tagName = "release/$minecraft_version-$version"
+            }
         }
     }
 }
