@@ -4,9 +4,7 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id "me.modmuss50.mod-publish-plugin"
 }
-base {
-    archivesName = "${mod_name}-forge-${minecraft_version}"
-}
+
 jar {
     manifest {
         attributes["MixinConfigs"] = "${mod_id}.mixins.json,${mod_id}.forge.mixins.json"
