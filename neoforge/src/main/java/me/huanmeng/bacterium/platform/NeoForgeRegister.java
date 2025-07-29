@@ -4,7 +4,9 @@ import me.huanmeng.bacterium.Constants;
 import me.huanmeng.bacterium.platform.services.IRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -58,8 +60,8 @@ public class NeoForgeRegister implements IRegister {
     }
 
     @Override
-    public BlockBehaviour.Properties createProperties(final float destroyTime, final float explosionResistance) {
-        return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance);
+    public BlockBehaviour.Properties createProperties(final ResourceLocation location, final float destroyTime, final float explosionResistance) {
+        return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance).setId(ResourceKey.create(Registries.BLOCK, location));
     }
 
     @Override
@@ -73,7 +75,7 @@ public class NeoForgeRegister implements IRegister {
     public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final ResourceLocation location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
         return BLOCK_TYPES.register(
                 location.getPath(),
-                () -> BlockEntityType.Builder.of(blockEntityBiFunction::apply, blockSupplier.get()).build(null)
+                () -> new BlockEntityType<>(blockEntityBiFunction::apply, blockSupplier.get())
         );
     }
 
@@ -92,7 +94,7 @@ public class NeoForgeRegister implements IRegister {
                         .sized(width, height)
                         .clientTrackingRange(trackingRange)
                         .updateInterval(updateInterval)
-                        .build(location.getPath())
+                        .build(ResourceKey.create(Registries.ENTITY_TYPE, location))
         );
     }
 

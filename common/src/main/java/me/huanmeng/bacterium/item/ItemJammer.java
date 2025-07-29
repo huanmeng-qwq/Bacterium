@@ -4,7 +4,6 @@ import me.huanmeng.bacterium.BacteriumCache;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,21 +29,23 @@ public class ItemJammer extends Item {
         }
         --time;
         if (time <= 0) {
-            entity.sendSystemMessage(Component.translatable("bacterium.item.jammeritem.jammed.message", BacteriumCache.jammedCount));
+            if (entity instanceof Player player) {
+                player.displayClientMessage(Component.translatable("bacterium.item.jammeritem.jammed.message", BacteriumCache.jammedCount), false);
+            }
             BacteriumCache.jammedAll = false;
             BacteriumCache.jammedCount = 0;
         }
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand usedHand) {
+    public InteractionResult use(final Level level, final Player player, final InteractionHand usedHand) {
         if (!level.isClientSide && time <= 0) {
             time = 30;// 30 tick delay
             BacteriumCache.jammedAll = true;
-            player.sendSystemMessage(Component.translatable("bacterium.item.jammeritem.rightclick.message"));
+            player.displayClientMessage(Component.translatable("bacterium.item.jammeritem.rightclick.message"), false);
 
         }
-        return InteractionResultHolder.pass(player.getItemInHand(usedHand));
+        return InteractionResult.PASS;
     }
 
     @Override

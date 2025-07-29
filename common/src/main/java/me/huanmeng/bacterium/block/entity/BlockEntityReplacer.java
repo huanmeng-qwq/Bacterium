@@ -111,7 +111,7 @@ public class BlockEntityReplacer extends BlockEntity {
     }
 
     public boolean isOutside(BlockPos pos) {
-        return pos.getY() > level.getMaxBuildHeight() || pos.getY() < level.getMinBuildHeight();
+        return pos.getY() > level.getMaxY() || pos.getY() < level.getMinY();
     }
 
     @Override

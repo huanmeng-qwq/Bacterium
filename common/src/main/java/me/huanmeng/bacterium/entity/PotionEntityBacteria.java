@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,12 +17,12 @@ public class PotionEntityBacteria extends ThrownPotion {
         super(entityType, level);
     }
 
-    public PotionEntityBacteria(final Level level, final LivingEntity shooter) {
-        super(level, shooter);
+    public PotionEntityBacteria(final Level level, final LivingEntity shooter, final ItemStack p_364103_) {
+        super(level, shooter, p_364103_);
     }
 
-    public PotionEntityBacteria(final Level level, final double x, final double y, final double z) {
-        super(level, x, y, z);
+    public PotionEntityBacteria(final Level level, final double x, final double y, final double z, final ItemStack p_364640_) {
+        super(level, x, y, z, p_364640_);
     }
 
     @Override

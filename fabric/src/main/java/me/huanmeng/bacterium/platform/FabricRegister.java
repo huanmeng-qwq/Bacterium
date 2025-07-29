@@ -3,10 +3,13 @@ package me.huanmeng.bacterium.platform;
 import com.google.common.base.Suppliers;
 import me.huanmeng.bacterium.platform.services.IRegister;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -28,8 +31,8 @@ import java.util.function.Supplier;
 public class FabricRegister implements IRegister {
 
     @Override
-    public BlockBehaviour.Properties createProperties(float destroyTime, float explosionResistance) {
-        return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance);
+    public BlockBehaviour.Properties createProperties(final ResourceLocation location, float destroyTime, float explosionResistance) {
+        return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance).setId(ResourceKey.create(Registries.BLOCK, location));
     }
 
     @Override
@@ -41,7 +44,7 @@ public class FabricRegister implements IRegister {
 
     @Override
     public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final ResourceLocation location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
-        BlockEntityType<?> type = BlockEntityType.Builder.of(blockEntityBiFunction::apply, blockSupplier.get()).build(null);
+        BlockEntityType<?> type = FabricBlockEntityTypeBuilder.create(blockEntityBiFunction::apply, blockSupplier.get()).build(null);
         Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, location, type);
         return Suppliers.memoize(() -> type);
     }
@@ -59,7 +62,7 @@ public class FabricRegister implements IRegister {
                 .sized(width, height)
                 .clientTrackingRange(trackingRange)
                 .updateInterval(updateInterval)
-                .build(location.getPath());
+                .build(ResourceKey.create(Registries.ENTITY_TYPE, location));
         Registry.register(BuiltInRegistries.ENTITY_TYPE, location, type);
         return Suppliers.memoize(() -> type);
     }

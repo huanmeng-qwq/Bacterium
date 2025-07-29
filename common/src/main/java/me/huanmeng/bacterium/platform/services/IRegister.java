@@ -19,7 +19,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface IRegister {
-    BlockBehaviour.Properties createProperties(float destroyTime, float explosionResistance);
+    BlockBehaviour.Properties createProperties(ResourceLocation location, float destroyTime, float explosionResistance);
 
     Supplier<Block> registerBlock(ResourceLocation location, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties);
 
