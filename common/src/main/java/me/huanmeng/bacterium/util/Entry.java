@@ -96,14 +96,11 @@ public class Entry {
     @SuppressWarnings("unchecked")
     private <T extends Comparable<T>> BlockState setPropertyValue(BlockState state, Property<T> property) {
         JsonElement value = this.props.get(property.getName());
-        if (property.getValueClass().isInstance(value)) {
-            try {
-                return state.setValue(property, property.valueCodec().decode(JSONOPS, value).getOrThrow().getFirst().value());
-            } catch (Throwable e) {
-                return state;
-            }
+        try {
+            return state.setValue(property, property.valueCodec().decode(JSONOPS, value).getOrThrow().getFirst().value());
+        } catch (Throwable e) {
+            return state;
         }
-        return state;
     }
 
     @SuppressWarnings("unchecked")
