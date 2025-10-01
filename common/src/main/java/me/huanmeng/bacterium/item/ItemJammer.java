@@ -7,7 +7,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -38,11 +37,11 @@ public class ItemJammer extends Item {
 
     @Override
     public InteractionResult use(final Level level, final Player player, final InteractionHand usedHand) {
-        if (!level.isClientSide && time <= 0) {
+        if (!level.isClientSide() && time <= 0) {
             time = 30;// 30 tick delay
             BacteriumCache.jammedAll = true;
             player.displayClientMessage(Component.translatable("bacterium.item.jammeritem.rightclick.message"), false);
-            player.getItemInHand(usedHand).hurtAndBreak(1, player, LivingEntity.getSlotForHand(usedHand));
+            player.getItemInHand(usedHand).hurtAndBreak(1, player, usedHand.asEquipmentSlot());
         }
         return InteractionResult.PASS;
     }
@@ -50,9 +49,9 @@ public class ItemJammer extends Item {
     @Override
     public InteractionResult useOn(final UseOnContext context) {
         final Player player = context.getPlayer();
-        if (player != null && time <= 0) {
-            context.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.getHand()));
-        }
+        /*if (player != null && time <= 0 && !context.getLevel().isClientSide()) {
+            context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
+        }*/
         return super.useOn(context);
     }
 }

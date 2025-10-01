@@ -28,7 +28,7 @@ public class PotionEntityBacteria extends ThrownSplashPotion {
 
     @Override
     protected void onHitBlock(final BlockHitResult result) {
-        if (level().isClientSide) return;
+        if (level().isClientSide()) return;
         final BlockPos blockPos = result.getBlockPos();
         final BlockState blockState = level().getBlockState(blockPos);
         if (BlockEntityBacteria.isInvalidBlock(blockState)) {

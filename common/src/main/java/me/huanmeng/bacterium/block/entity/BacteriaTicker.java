@@ -13,7 +13,7 @@ public class BacteriaTicker implements BlockEntityTicker<BlockEntityBacteria> {
 
     @Override
     public void tick(Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull BlockEntityBacteria blockEntity) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return;
         }
         blockEntity.setChanged();

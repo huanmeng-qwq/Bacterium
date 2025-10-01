@@ -13,7 +13,7 @@ public class ReplacerTicker implements BlockEntityTicker<BlockEntityReplacer> {
 
     @Override
     public void tick(Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull BlockEntityReplacer blockEntity) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return;
         }
         blockEntity.setChanged();
