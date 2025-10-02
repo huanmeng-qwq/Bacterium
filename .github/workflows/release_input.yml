@@ -1,0 +1,27 @@
+name: Release Custom (Input)
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        required: true
+        description: Specify the module release
+
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add permissons
+        run: chmod +x gradlew
+      - run: ./gradlew :${{ github.event.inputs.module }}:build publishMods
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
