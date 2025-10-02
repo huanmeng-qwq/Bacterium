@@ -2,9 +2,10 @@ name: Release Custom (Input)
 on:
   workflow_dispatch:
     inputs:
-      module:
+      external_arguments:
         required: true
-        description: Specify the module release
+        description: Specify the external arguments
+
 
 
 permissions:
@@ -20,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Add permissons
         run: chmod +x gradlew
-      - run: ./gradlew :${{ github.event.inputs.module }}:build ${{ github.event.inputs.module }}:publishMods
+      - run: ./gradlew ${{ github.event.inputs.external_arguments }}
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
