@@ -49,3 +49,4 @@ rootProject.name = 'Bacterium'
 include('common')
 include('fabric')
 include('neoforge')
+include('forge')
