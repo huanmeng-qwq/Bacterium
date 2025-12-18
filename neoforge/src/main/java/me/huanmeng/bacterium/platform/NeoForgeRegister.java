@@ -7,7 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -26,26 +26,27 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.jetbrains.annotations.NotNull;
 
 public class NeoForgeRegister implements IRegister {
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(
+    private static final DeferredRegister<@NotNull Block> BLOCKS = DeferredRegister.create(
             BuiltInRegistries.BLOCK,
             Constants.MOD_ID
     );
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(
+    private static final DeferredRegister<@NotNull Item> ITEMS = DeferredRegister.create(
             BuiltInRegistries.ITEM,
             Constants.MOD_ID
     );
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_TYPES = DeferredRegister.create(
+    private static final DeferredRegister<@NotNull BlockEntityType<?>> BLOCK_TYPES = DeferredRegister.create(
             BuiltInRegistries.BLOCK_ENTITY_TYPE,
             Constants.MOD_ID
     );
-    private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(
+    private static final DeferredRegister<@NotNull EntityType<?>> ENTITIES = DeferredRegister.create(
             BuiltInRegistries.ENTITY_TYPE,
             Constants.MOD_ID
     );
 
-    private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(
+    private static final DeferredRegister<@NotNull CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(
             BuiltInRegistries.CREATIVE_MODE_TAB,
             Constants.MOD_ID
     );
@@ -60,19 +61,19 @@ public class NeoForgeRegister implements IRegister {
     }
 
     @Override
-    public BlockBehaviour.Properties createProperties(final ResourceLocation location, final float destroyTime, final float explosionResistance) {
+    public BlockBehaviour.Properties createProperties(final Identifier location, final float destroyTime, final float explosionResistance) {
         return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance).setId(ResourceKey.create(Registries.BLOCK, location));
     }
 
     @Override
-    public Supplier<Block> registerBlock(final ResourceLocation location, final Function<BlockBehaviour.Properties, Block> blockFunction, final BlockBehaviour.Properties properties) {
+    public Supplier<Block> registerBlock(final Identifier location, final Function<BlockBehaviour.Properties, Block> blockFunction, final BlockBehaviour.Properties properties) {
         return BLOCKS.register(
                 location.getPath(),
                 () -> blockFunction.apply(properties));
     }
 
     @Override
-    public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final ResourceLocation location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
+    public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final Identifier location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
         return BLOCK_TYPES.register(
                 location.getPath(),
                 () -> new BlockEntityType<>(blockEntityBiFunction::apply, blockSupplier.get())
@@ -80,14 +81,14 @@ public class NeoForgeRegister implements IRegister {
     }
 
     @Override
-    public Supplier<Item> registerItem(final ResourceLocation location, final Function<Item.Properties, Item> itemFunction, final Item.Properties properties) {
+    public Supplier<Item> registerItem(final Identifier location, final Function<Item.Properties, Item> itemFunction, final Item.Properties properties) {
         return ITEMS.register(
                 location.getPath(),
                 () -> itemFunction.apply(properties));
     }
 
     @Override
-    public <T extends Entity> Supplier<EntityType<T>> registerEntity(final ResourceLocation location, final MobCategory mobCategory, final BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval) {
+    public <T extends Entity> Supplier<EntityType<@NotNull T>> registerEntity(final Identifier location, final MobCategory mobCategory, final BiFunction<EntityType<@NotNull T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval) {
         return ENTITIES.register(
                 location.getPath(),
                 () -> EntityType.Builder.of(entityFunction::apply, mobCategory)
@@ -99,7 +100,7 @@ public class NeoForgeRegister implements IRegister {
     }
 
     @Override
-    public void initCreativeModeTab(final ResourceLocation location, final Supplier<ItemStack> icon, final List<Supplier<Item>> items) {
+    public void initCreativeModeTab(final Identifier location, final Supplier<ItemStack> icon, final List<Supplier<Item>> items) {
         CREATIVE_MODE_TAB.register(location.getPath(), () -> CreativeModeTab.builder()
                 .icon(icon)
                 .title(Component.translatable("itemGroup.bacterium.bacterium"))

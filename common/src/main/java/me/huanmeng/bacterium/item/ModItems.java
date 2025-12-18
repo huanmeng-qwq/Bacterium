@@ -1,7 +1,7 @@
 package me.huanmeng.bacterium.item;
 
 import me.huanmeng.bacterium.Constants;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import java.util.List;
 import java.util.function.Supplier;
@@ -22,8 +22,8 @@ public class ModItems {
     }
 
     public static class Namespaces {
-        public static final ResourceLocation BUNCH = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "bunch");
-        public static final ResourceLocation JAMMER = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "jammeritem");
-        public static final ResourceLocation POTION = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "potion");
+        public static final Identifier BUNCH = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "bunch");
+        public static final Identifier JAMMER = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jammeritem");
+        public static final Identifier POTION = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "potion");
     }
 }

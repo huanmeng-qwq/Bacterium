@@ -1,7 +1,7 @@
 package me.huanmeng.bacterium.platform.services;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -19,15 +19,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface IRegister {
-    BlockBehaviour.Properties createProperties(ResourceLocation location, float destroyTime, float explosionResistance);
+    BlockBehaviour.Properties createProperties(Identifier location, float destroyTime, float explosionResistance);
 
-    Supplier<Block> registerBlock(ResourceLocation location, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties);
+    Supplier<Block> registerBlock(Identifier location, Function<BlockBehaviour.Properties, Block> blockFunction, BlockBehaviour.Properties properties);
 
-    <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(ResourceLocation location, BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, Supplier<Block> blockSupplier);
+    <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(Identifier location, BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, Supplier<Block> blockSupplier);
 
-    Supplier<Item> registerItem(ResourceLocation location, Function<Item.Properties, Item> itemFunction, Item.Properties properties);
+    Supplier<Item> registerItem(Identifier location, Function<Item.Properties, Item> itemFunction, Item.Properties properties);
 
-    <T extends Entity> Supplier<EntityType<T>> registerEntity(final ResourceLocation location, MobCategory mobCategory, BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval);
+    <T extends Entity> Supplier<EntityType<T>> registerEntity(final Identifier location, MobCategory mobCategory, BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval);
 
-    void initCreativeModeTab(ResourceLocation location, Supplier<ItemStack> icon, List<Supplier<Item>> items);
+    void initCreativeModeTab(Identifier location, Supplier<ItemStack> icon, List<Supplier<Item>> items);
 }

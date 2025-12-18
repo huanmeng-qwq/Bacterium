@@ -1,7 +1,7 @@
 package me.huanmeng.bacterium.block;
 
 import me.huanmeng.bacterium.Constants;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import java.util.List;
@@ -20,9 +20,9 @@ public class ModBlocks {
     }
 
     public static class Namespaces {
-        public static final ResourceLocation BACTERIA = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "bacterium_colony");
-        public static final ResourceLocation REPLACER = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "replacer");
-        public static final ResourceLocation JAMMER = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "jammer");
-        public static final ResourceLocation MUST = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "must");
+        public static final Identifier BACTERIA = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "bacterium_colony");
+        public static final Identifier REPLACER = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "replacer");
+        public static final Identifier JAMMER = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jammer");
+        public static final Identifier MUST = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "must");
     }
 }

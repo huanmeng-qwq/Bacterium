@@ -12,7 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -105,7 +105,7 @@ public class Entry {
 
     @SuppressWarnings("unchecked")
     private static Entry load(String blockId, Optional<CompoundTag> nbt, Map<String, JsonElement> props) {
-        final Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(blockId));
+        final Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(Identifier.parse(blockId));
         if (block.isEmpty()) return null;
         final Entry entry = new Entry(block.get().defaultBlockState(), null, null);
         entry.nbt = nbt.orElse(null);

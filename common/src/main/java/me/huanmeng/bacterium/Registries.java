@@ -15,7 +15,7 @@ import me.huanmeng.bacterium.item.ItemSplashBacteria;
 import me.huanmeng.bacterium.item.ModItems;
 import me.huanmeng.bacterium.platform.Services;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -27,7 +27,7 @@ public class Registries {
         registerItems();
         registerBlocks();
         registerEntities();
-        Services.REGISTER.initCreativeModeTab(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, Constants.MOD_ID), () -> ModItems.REPLACER.get().getDefaultInstance(), Arrays.asList(
+        Services.REGISTER.initCreativeModeTab(Identifier.fromNamespaceAndPath(Constants.MOD_ID, Constants.MOD_ID), () -> ModItems.REPLACER.get().getDefaultInstance(), Arrays.asList(
                 ModItems.BUNCH,
                 ModItems.JAMMER,
                 ModItems.POTION,
@@ -38,7 +38,7 @@ public class Registries {
         ));
     }
 
-    private static ResourceKey<Item> createItemRegistryKey(ResourceLocation location) {
+    private static ResourceKey<Item> createItemRegistryKey(Identifier location) {
         return ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, location);
     }
 

@@ -9,8 +9,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -31,33 +32,33 @@ import java.util.function.Supplier;
 public class FabricRegister implements IRegister {
 
     @Override
-    public BlockBehaviour.Properties createProperties(final ResourceLocation location, float destroyTime, float explosionResistance) {
+    public BlockBehaviour.Properties createProperties(final Identifier location, float destroyTime, float explosionResistance) {
         return BlockBehaviour.Properties.of().strength(destroyTime, explosionResistance).setId(ResourceKey.create(Registries.BLOCK, location));
     }
 
     @Override
-    public Supplier<Block> registerBlock(final ResourceLocation location, final Function<BlockBehaviour.Properties, Block> blockFunction, final BlockBehaviour.Properties properties) {
+    public Supplier<Block> registerBlock(final Identifier location, final Function<BlockBehaviour.Properties, Block> blockFunction, final BlockBehaviour.Properties properties) {
         final Block block = blockFunction.apply(properties);
         Registry.register(BuiltInRegistries.BLOCK, location, block);
         return Suppliers.memoize(() -> block);
     }
 
     @Override
-    public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final ResourceLocation location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
+    public <T extends BlockEntity> Supplier<BlockEntityType<?>> registerBlockEntityType(final Identifier location, final BiFunction<BlockPos, BlockState, T> blockEntityBiFunction, final Supplier<Block> blockSupplier) {
         BlockEntityType<?> type = FabricBlockEntityTypeBuilder.create(blockEntityBiFunction::apply, blockSupplier.get()).build(null);
         Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, location, type);
         return Suppliers.memoize(() -> type);
     }
 
     @Override
-    public Supplier<Item> registerItem(final ResourceLocation location, final Function<Item.Properties, Item> itemFunction, final Item.Properties properties) {
+    public Supplier<Item> registerItem(final Identifier location, final Function<Item.Properties, Item> itemFunction, final Item.Properties properties) {
         final Item item = itemFunction.apply(properties);
         Registry.register(BuiltInRegistries.ITEM, location, item);
         return Suppliers.memoize(() -> item);
     }
 
     @Override
-    public <T extends Entity> Supplier<EntityType<T>> registerEntity(final ResourceLocation location, final MobCategory mobCategory, final BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval) {
+    public <T extends Entity> Supplier<EntityType<T>> registerEntity(final Identifier location, final MobCategory mobCategory, final BiFunction<EntityType<T>, Level, T> entityFunction, final float width, final float height, final int trackingRange, final int updateInterval) {
         final EntityType<T> type = EntityType.Builder.of(entityFunction::apply, mobCategory)
                 .sized(width, height)
                 .clientTrackingRange(trackingRange)
@@ -68,7 +69,7 @@ public class FabricRegister implements IRegister {
     }
 
     @Override
-    public void initCreativeModeTab(final ResourceLocation location, final Supplier<ItemStack> icon, final List<Supplier<Item>> items) {
+    public void initCreativeModeTab(final Identifier location, final Supplier<ItemStack> icon, final List<Supplier<Item>> items) {
         final CreativeModeTab creativeModeTab = FabricItemGroup.builder()
                 .icon(icon::get)
                 .title(Component.translatable("itemGroup.bacterium.bacterium"))
