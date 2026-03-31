@@ -8,7 +8,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -51,8 +53,8 @@ public class BlockMust extends Block implements ModBlock {
             LootParams lootparams = params.withParameter(LootContextParams.BLOCK_STATE, state).create(LootContextParamSets.BLOCK);
             Random random = ThreadLocalRandom.current();
             int r = random.nextInt(3);
-            final ItemStack tool = lootparams.contextMap().getOptional(LootContextParams.TOOL);
-            if (tool != null && !tool.isEmpty()) {
+            final ItemInstance tool = lootparams.contextMap().getOptional(LootContextParams.TOOL);
+            if (tool != null && !tool.is(Items.AIR)) {
                 int m = Math.max(1, random.nextInt(4));
                 Holder.Reference<Enchantment> entry = lootparams.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);
                 r += EnchantmentHelper.getItemEnchantmentLevel(entry, tool) * m;

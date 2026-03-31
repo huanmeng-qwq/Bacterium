@@ -2,7 +2,7 @@ package me.huanmeng.bacterium.platform;
 
 import com.google.common.base.Suppliers;
 import me.huanmeng.bacterium.platform.services.IRegister;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -70,8 +70,8 @@ public class FabricRegister implements IRegister {
 
     @Override
     public void initCreativeModeTab(final Identifier location, final Supplier<ItemStack> icon, final List<Supplier<Item>> items) {
-        final CreativeModeTab creativeModeTab = FabricItemGroup.builder()
-                .icon(icon::get)
+        final CreativeModeTab creativeModeTab = FabricCreativeModeTab.builder()
+                .icon(icon)
                 .title(Component.translatable("itemGroup.bacterium.bacterium"))
                 .displayItems((itemDisplayParameters, output) -> {
                     items.forEach(item -> output.accept(item.get()));

@@ -28,7 +28,7 @@ public class ItemJammer extends Item {
         --time;
         if (time <= 0) {
             if (entity instanceof Player player) {
-                player.displayClientMessage(Component.translatable("bacterium.item.jammeritem.jammed.message", BacteriumCache.jammedCount), false);
+                player.sendSystemMessage(Component.translatable("bacterium.item.jammeritem.jammed.message", BacteriumCache.jammedCount));
             }
             BacteriumCache.jammedAll = false;
             BacteriumCache.jammedCount = 0;
@@ -40,7 +40,7 @@ public class ItemJammer extends Item {
         if (!level.isClientSide() && time <= 0) {
             time = 30;// 30 tick delay
             BacteriumCache.jammedAll = true;
-            player.displayClientMessage(Component.translatable("bacterium.item.jammeritem.rightclick.message"), false);
+            player.sendSystemMessage(Component.translatable("bacterium.item.jammeritem.rightclick.message"));
             player.getItemInHand(usedHand).hurtAndBreak(1, player, usedHand.asEquipmentSlot());
         }
         return InteractionResult.PASS;

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class Entry {
     private static final JsonOps JSONOPS = JsonOps.COMPRESSED;
     public static final MapCodec<Entry> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.fieldOf("block").forGetter(e -> e.state.getBlockHolder().getRegisteredName()),
+            Codec.STRING.fieldOf("block").forGetter(e -> e.state.typeHolder().getRegisteredName()),
             CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(e -> Optional.ofNullable(e.nbt)),
             //
             new Codec<Map<String, JsonElement>>() {
