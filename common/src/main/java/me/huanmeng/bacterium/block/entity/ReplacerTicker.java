@@ -27,7 +27,7 @@ public class ReplacerTicker implements BlockEntityTicker<BlockEntityReplacer> {
             if (!level.hasNeighborSignal(pos)) {
                 return;
             }
-            blockEntity.findInfectBlcoks();
+            blockEntity.findInfectBlocks();
             return;
         }
         if (ThreadLocalRandom.current().nextInt(50) + 1 < 50) {
