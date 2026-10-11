@@ -64,7 +64,7 @@ public class BlockEntityBacteria extends BlockEntity {
     public boolean isInfectBlock(BlockState state) {
         if (BacteriumCache.isUsed(id)) return false;
         if (infected.isEmpty()) return false;
-        if (state.getBlock() instanceof ModBlock block && block.getModBlockType() == ModBlockType.JAMMER) {
+        if ((state.getBlock() instanceof ModBlock block && block.getModBlockType() == ModBlockType.JAMMER) || state.getBlock() == Blocks.BRICKS) {
             // remove all of this id
             BacteriumCache.markUsed(id);
             return false;
