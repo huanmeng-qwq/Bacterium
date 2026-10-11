@@ -29,7 +29,7 @@ public class BlockEntityReplacer extends BlockEntity {
         this.id = BacteriumCache.freeId();
     }
 
-    public void findInfectBlcoks() {
+    public void findInfectBlocks() {
         final BlockPos above = worldPosition.above();
         final BlockPos below = worldPosition.below();
 
@@ -61,7 +61,7 @@ public class BlockEntityReplacer extends BlockEntity {
     public boolean isInfectBlock(BlockState state) {
         if (BacteriumCache.isUsed(id)) return false;
         if (sample == null) return false;
-        if (state.getBlock() instanceof ModBlock block && block.getModBlockType() == ModBlockType.JAMMER) {
+        if ((state.getBlock() instanceof ModBlock block && block.getModBlockType() == ModBlockType.JAMMER) || state.getBlock() == Blocks.BRICKS) {
             // remove all of this id
             BacteriumCache.markUsed(id);
             return false;
