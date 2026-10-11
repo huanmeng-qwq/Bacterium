@@ -53,7 +53,7 @@ public class BlockMust extends Block implements ModBlock {
             LootParams lootparams = params.withParameter(LootContextParams.BLOCK_STATE, state).create(LootContextParamSets.BLOCK);
             Random random = ThreadLocalRandom.current();
             int r = random.nextInt(3);
-            final ItemInstance tool = lootparams.contextMap().getOptional(LootContextParams.TOOL);
+            final ItemInstance tool = lootparams.contextMap().getOrDefault(LootContextParams.TOOL, null);
             if (tool != null && !tool.is(Items.AIR)) {
                 int m = Math.max(1, random.nextInt(4));
                 Holder.Reference<Enchantment> entry = lootparams.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);

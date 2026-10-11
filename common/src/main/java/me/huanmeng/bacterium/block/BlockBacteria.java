@@ -1,6 +1,5 @@
 package me.huanmeng.bacterium.block;
 
-import com.mojang.serialization.MapCodec;
 import me.huanmeng.bacterium.block.entity.BacteriaTicker;
 import me.huanmeng.bacterium.block.entity.BlockEntityBacteria;
 import me.huanmeng.bacterium.type.ModBlockType;
@@ -15,15 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockBacteria extends BaseEntityBlock implements ModBlock {
-    public static final MapCodec<BlockBacteria> CODEC = simpleCodec(BlockBacteria::new);
-
     public BlockBacteria(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     protected RenderShape getRenderShape(BlockState state) {
