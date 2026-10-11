@@ -8,6 +8,7 @@
   "block.bacterium.jammer": "细菌干扰器",
   "bacterium.item.jammeritem.rightclick.message": "清理细菌中。。。",
   "bacterium.item.jammeritem.jammed.message": "清除了 %s 个细菌。",
+  "item.bacterium.potion": "细菌药水",
   "item.bacterium.potion.effect.awkward": "细菌-喷溅型粗制药水",
   "item.bacterium.potion.effect.empty": "细菌-喷溅型药水",
   "item.bacterium.potion.effect.fire_resistance": "细菌-喷溅型抗火药水",
